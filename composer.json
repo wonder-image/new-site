@@ -1,0 +1,19 @@
+{
+    "name": "wonder-image/new",
+    "type": "project",
+    "description": "The skeleton application for the Wonder Image framework.",
+    "keywords": [
+        "wonder-image",
+        "framework"
+    ],
+    "license": "MIT",
+    "require": {
+        "php": "^8.2",
+        "wonder-image/app": "1.4.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "custom/class/"
+        }
+    }
+}
