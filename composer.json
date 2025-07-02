@@ -9,8 +9,10 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
-        "wonder-image/app": "1.4.4"
+        "wonder-image/app": "dev-main"
     },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
     "autoload": {
         "psr-4": {
             "App\\": "custom/class/"
