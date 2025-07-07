@@ -59,8 +59,8 @@
                 <img src="<?=$PATH->logoWhite?>" alt="Logo <?=$SOCIETY->name?>" class="p-r f-start w-80">
                 <div class="text w-100 mt-6">
                     <b><?=$SOCIETY->legal_name?></b> <br>
-                    P.Iva: <a class="tx-none"><b><?=$SOCIETY->pi?></b></a> <br>
-                    C.Fiscale: <a class="tx-none"><b><?=$SOCIETY->cf?></b></a> <br>
+                    P.Iva: <b class="tx-none"><?=$SOCIETY->pi?></b> <br>
+                    C.Fiscale: <b class="tx-none"><?=$SOCIETY->cf?></b> <br>
                 </div>
             </div>
 
@@ -79,7 +79,7 @@
                 <div class="w-100">
                     <div class="subtitle">CONTATTI</div>
                     <div class="text mt-1">
-                        Cel. <a href="tel:<?=$SOCIETY->cel?>" class="tx-none"><?=prettyPhone($SOCIETY->cel)?></a> <br>
+                        Tel. <a href="tel:<?=$SOCIETY->tel?>" class="tx-none"><?=prettyPhone($SOCIETY->tel)?></a> <br>
                         Mail. <a href="maiilto:<?=$SOCIETY->email?>" class="tx-none"><?=$SOCIETY->email?></a>
                     </div>
                 </div>
