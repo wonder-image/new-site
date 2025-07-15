@@ -17,5 +17,15 @@
         "psr-4": {
             "App\\": "custom/class/"
         }
+    },
+    "scripts": {
+        "post-install-cmd": [
+            "@composer dump-autoload",
+            "php forge config"
+        ],
+        "post-update-cmd": [
+            "@composer dump-autoload",
+            "php forge config"
+        ]
     }
 }

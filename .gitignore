@@ -2,3 +2,6 @@
 .DS_Store
 vendor/
 node_modules/
+composer.lock
+package.json
+package-lock.json

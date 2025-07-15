@@ -1,0 +1,10 @@
+<?php
+    
+    require_once __DIR__.'/vendor/autoload.php';
+
+    use Symfony\Component\Console\Input\ArgvInput;
+    use Symfony\Component\Console\Output\ConsoleOutput;
+    use Wonder\Console\Forge;
+
+    $status = (new Forge())->run(new ArgvInput(), new ConsoleOutput());
+    exit($status);
