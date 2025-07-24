@@ -1,3 +1,1 @@
 <?php
-
-    $DEPENDENCIES->bootstrapIcons();
