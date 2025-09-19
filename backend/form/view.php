@@ -9,11 +9,7 @@
 
     require_once "set-up.php";
 
-    if (!empty($PAGE->redirect)) {
-        $REDIRECT = $PAGE->redirect;
-    } else {
-        $REDIRECT = "$PATH->backend/$NAME->folder/list.php";
-    }
+    $REDIRECT = (!empty($PAGE->redirect)) ? $PAGE->redirect : "$PATH->backend/$NAME->folder/list.php";
 
     $FORM = info('form', 'id', $_GET['id']);
     $FORM->prettyCreation = date('d/m/Y', strtotime($FORM->creation)).' alle '.date('H:i', strtotime($FORM->creation));

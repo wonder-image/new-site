@@ -1,6 +1,7 @@
 <?php
 
     $TABLE->FORM = [
+        "code" => [],
         "name" => [
             "input" => [
                 "format" => [
@@ -33,6 +34,17 @@
         "request_url" => [
             "sql" => [ 
                 "length" => 10000 
+            ]
+        ],
+        "file" => [
+            "input" => [ 
+                "format" => [
+                    "file" => true,
+                    "dir" => "/form/files/",
+                    "max_file" => null,
+                    "max_size" => null,
+                    "extensions" => null
+                ]
             ]
         ],
         "privacy" => []
