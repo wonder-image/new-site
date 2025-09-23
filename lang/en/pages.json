@@ -1,0 +1,25 @@
+{
+    "home": {
+        "seo": {
+            "title": "{{society_name}}",
+            "description": "{{legal_name}}"
+        },
+        "content": {
+            "hero": {
+                "title": "About us",
+                "subtitle": "{{society_name}}"
+            }
+        }
+    },
+    "contact": {
+        "seo": {
+            "title": "Contacts - {{society_name}}",
+            "description": "All contacts of {{society_name}}"
+        },
+        "content": {
+            "hero": {
+                "title": "Contacts"
+            }
+        }
+    }
+}

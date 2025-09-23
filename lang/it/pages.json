@@ -1,0 +1,26 @@
+{
+    "home" : {
+        "seo" : {
+            "title" : "{{society_name}} - Montaggio di strutture in carpenteria metallica",
+            "description" : "La {{legal_name}} offre servizi di montaggio, smontaggio e manutenzione di strutture in carpenteria metallica e servizio di noleggio mezzi per ogni tipo di progetto."
+        },
+        "content" : {
+            "hero" : {
+                "title" : "Chi siamo",
+                "subtitle" : "FB Montaggi",
+                "text" : "FB Montaggi è un'azienda specializzata nella produzione e noleggio di strutture per eventi, con oltre 30 anni di esperienza nel settore. Offriamo soluzioni personalizzate per ogni tipo di evento, garantendo qualità, sicurezza e innovazione."
+            }
+        }
+    },
+    "contact" : {
+        "seo" : {
+            "title" : "Contatti - {{society_name}}",
+            "description" : "Tutti i contatti di {{society_name}}"
+        },
+        "content" : {
+            "hero" : {
+                "title" : "Contatti"
+            }
+        }
+    }
+}

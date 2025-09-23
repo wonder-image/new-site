@@ -1,0 +1,26 @@
+{
+  "forms": {
+    "fields": {
+      
+    },
+    "contact": {
+      "title": "Need more information?",
+      "subtitle": "Fill out the form"
+    },
+    "newsletter": {
+      "title": "Subscribe to our newsletter",
+      "subtitle": "Receive updates and promotions"
+    }
+  },
+  "navigation": {
+    "home": "Home",
+    "about": "About us",
+    "services": "Services",
+    "products": "Products",
+    "news": "News",
+    "contact": "Contact",
+    "privacy_policy": "Privacy Policy",
+    "cookie_policy": "Cookie Policy",
+    "terms_conditions": "Terms and Conditions"
+  }
+}
