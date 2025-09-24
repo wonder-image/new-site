@@ -7,9 +7,18 @@
     $ROOT = $_SERVER['DOCUMENT_ROOT'];
     require_once $ROOT."/vendor/wonder-image/app/wonder-image.php";
 
+    $PAGE_KEY = 'home';
+
+    $SEO->title = __t("pages.{$PAGE_KEY}.seo.title");
+    $SEO->description = __t("pages.{$PAGE_KEY}.seo.description");
+    $SEO->url = __u();
+    $SEO->breadcrumb = [
+        $SEO->url => __t("components.navigation.{$PAGE_KEY}")
+    ];
+    
 ?>
 <!DOCTYPE html>
-<html lang="it">
+<html lang="<?=__l()?>">
 <head>
 
     <?php  include $ROOT_APP.'/utility/frontend/head.php'; ?>
