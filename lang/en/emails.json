@@ -2,9 +2,5 @@
     "contact_request_customer": {
         "subject": "Request Sent",
         "text": "Hello {{name}},<br>Your request has been successfully sent. We will respond as soon as possible.<br>Best regards."
-    },
-    "contact_request_admin": {
-        "subject": "New Contact from the Website",
-        "text": "Here are the contact details:<br>{{body}}<br><br><a href=\"{{request}}\">Click here</a> to view the request.<br><br>Request submission link:<br><a href='{{request_url}}'>{{request_url}}</a>"
     }
 }
