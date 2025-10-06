@@ -8,7 +8,7 @@
         <div class="center phone-none">
             <div class="d-flex tx-white gap-4 tx-upper">
             <a href="<?=__u()?>" class="tx-none"> <?=__t("components.navigation.home")?> </a>
-            <a href="<?=__u('contact')?>/contact/" class="tx-none"> <?=__t("components.navigation.contact")?> </a>
+            <a href="<?=__u('contact')?>" class="tx-none"> <?=__t("components.navigation.contact")?> </a>
         </div>
 
         <div id="hamburger" class="c-h f-end pc-none tablet-none" onclick="menuMobile()">
