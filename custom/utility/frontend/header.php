@@ -5,7 +5,8 @@
             <img src="<?=$PATH->logoWhite?>" alt="Logo <?=$SOCIETY->name?>" class="h-100">
         </a>
 
-        <div class="d-flex tx-white phone-none gap-4 pl-4 center">
+        <div class="center phone-none">
+            <div class="d-flex tx-white gap-4 tx-upper">
             <a href="<?=__u()?>" class="tx-none"> <?=__t("components.navigation.home")?> </a>
             <a href="<?=__u('contact')?>/contact/" class="tx-none"> <?=__t("components.navigation.contact")?> </a>
         </div>
