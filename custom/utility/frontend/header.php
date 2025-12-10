@@ -2,7 +2,12 @@
     <div class="content">
 
         <a href="<?=__u()?>" class="p-r f-start h-80 c-h">
-            <img src="<?=$PATH->logoWhite?>" alt="Logo <?=$SOCIETY->name?>" class="h-100">
+            <?=__ri($SOCIETY->logoWhite)
+                    ->alt("Logo Bianco $SOCIETY->name")
+                    ->addClass('h-100')
+                    ->skeleton(false)
+                    ->size(480)
+                    ->render()?>
         </a>
 
         <div class="center phone-none">

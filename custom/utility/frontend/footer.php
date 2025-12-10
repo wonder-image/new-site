@@ -59,7 +59,12 @@
         <div class="w-100 d-grid col-3 col-p-1 gap-12">
 
             <div>
-                <img src="<?=$PATH->logoWhite?>" alt="Logo <?=$SOCIETY->name?>" class="p-r f-start w-80">
+                <?=__ri($SOCIETY->logoBlack)
+                    ->alt("Logo Nero $SOCIETY->name")
+                    ->addClass('p-r f-start w-60')
+                    ->skeleton(false)
+                    ->size(480)
+                    ->render()?>
                 <div class="text w-100 mt-6">
                     <b><?=$SOCIETY->legal_name?></b> <br>
                     <?=__t('components.terms.pi')?>: <b class="tx-none"><?=$SOCIETY->pi?></b>
