@@ -1,0 +1,118 @@
+Quindi non ha senso richiamarlo in deploy.yml:
+name: 🚀 Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  web-deploy:
+    name: 🎯 Deploy
+    runs-on: ubuntu-latest
+    env:
+      BWS_ACCESS_TOKEN: ${{ secrets.BWS_ACCESS_TOKEN }}
+      BWS_PROJECT_ID: ${{ secrets.BWS_PROJECT_ID }}
+    steps:
+    
+      - name: 🚚 Get latest code
+        uses: actions/checkout@v4
+
+      - name: 📦 Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: 📦 Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          tools: composer
+
+      - name: 📦 Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jq unzip
+     
+      - name: 📦 Install Bitwarden Secrets Manager CLI
+        run: |
+          curl -Lso bws.zip https://github.com/bitwarden/sdk-sm/releases/download/bws-v2.0.0/bws-x86_64-unknown-linux-gnu-2.0.0.zip
+          unzip -o bws.zip
+          chmod +x bws
+          sudo mv bws /usr/local/bin/bws
+          bws --version
+
+      - name: 🔐 Load secrets + generate .env
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          : > .env
+
+          bws secret list "$BWS_PROJECT_ID" \
+            | jq -c '.[] | select(.key != null and .value != null)' \
+            | while read -r item; do
+                key="$(echo "$item" | jq -r '.key')"
+                value="$(echo "$item" | jq -r '.value')"
+
+                echo "::add-mask::$value"
+
+                printf '%s=%s\n' "$key" "$value" >> .env
+                printf '%s=%s\n' "$key" "$value" >> "$GITHUB_ENV"
+              done
+
+          cat >> .env <<EOF
+
+          APP_DEBUG=false
+          APP_DOMAIN=${{ vars.APP_DOMAIN }}
+          APP_URL=https://${{ vars.APP_DOMAIN }}
+
+          ASSETS_VERSION=${{ vars.ASSETS_VERSION }}
+
+          DB_CONNECTION_LOG=false
+
+          EOF
+
+      - name: Normalize FTP path
+        shell: bash
+        run: |
+          set -euo pipefail
+          path="${FTP_REMOTE_PATH:-}"
+          [ -n "$path" ] || { echo "Missing FTP_REMOTE_PATH"; exit 1; }
+          [[ "$path" != */ ]] && path="${path}/"
+          echo "FTP_REMOTE_PATH=$path" >> "$GITHUB_ENV"
+          
+      - name: 📦 Installa Pacchetti
+        run: composer install --no-dev --optimize-autoloader --no-scripts
+        
+      - name: 📂 Sincronizza file FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+            server: ${{ env.FTP_HOST }}
+            username: ${{ env.FTP_USER }}
+            password: ${{ env.FTP_PASSWORD }}
+            port: ${{ env.FTP_PORT }}
+            server-dir: ${{ env.FTP_REMOTE_PATH }}
+            local-dir: ./
+            exclude: |
+              **/.git*
+              **/.git*/**
+              **/.github*
+              **/.github/**
+              **/.vscode/**
+              **/composer.json
+              **/composer.lock
+              **/package.json
+              **/package-lock.json
+              *.md
+
+      - name: 🗄️ Update App
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          curl -fsS --retry 3 --retry-all-errors \
+            -X POST "https://${{ vars.APP_DOMAIN }}/api/app/update/" \
+            -H "Authorization: Bearer $GITHUB_API_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"release_id\":\"$GITHUB_SHA\",\"source\":\"github\"}"
