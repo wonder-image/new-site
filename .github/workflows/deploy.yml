@@ -1,4 +1,3 @@
-Quindi non ha senso richiamarlo in deploy.yml:
 name: 🚀 Deploy
 
 on:

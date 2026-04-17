@@ -1,6 +1,6 @@
 {
     "private": true,
     "dependencies": {
-        "wonder-image": "latest"
+        "wonder-image": "^2.0.6"
     }
 }

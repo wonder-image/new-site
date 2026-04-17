@@ -1,8 +1,32 @@
 
+# OS files
 .DS_Store
-vendor/
-node_modules/
-composer.lock
-package-lock.json
-.env
-forge
+
+# Dependencies
+/vendor/
+/node_modules/
+
+# Environment files
+/.env
+/.env.*
+!/.env.example
+
+# Logs
+*.log
+
+# Generated/local site configuration
+/.htaccess
+/robots.txt
+/handler/index.php
+/assets/0.0/css/set-up/color.css
+/assets/0.0/css/set-up/root.css
+
+# Runtime/generated content
+/assets/temp/*
+!/assets/temp/.gitkeep
+/assets/upload/**
+!/assets/upload/**/
+!/assets/upload/**/*.gitkeep
+!/assets/upload/**/README.md
+/shared/sitemap/*
+!/shared/sitemap/.gitkeep
