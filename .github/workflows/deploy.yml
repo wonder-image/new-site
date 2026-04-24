@@ -39,6 +39,7 @@ jobs:
           unzip -o bws.zip
           chmod +x bws
           sudo mv bws /usr/local/bin/bws
+          rm bws.zip
           bws --version
 
       - name: 🔐 Load secrets + generate .env
@@ -54,10 +55,18 @@ jobs:
                 key="$(echo "$item" | jq -r '.key')"
                 value="$(echo "$item" | jq -r '.value')"
 
-                echo "::add-mask::$value"
-
-                printf '%s=%s\n' "$key" "$value" >> .env
+                # Tutti i secret servono al job
                 printf '%s=%s\n' "$key" "$value" >> "$GITHUB_ENV"
+
+                # Solo i secret applicativi finiscono nel .env
+                case "$key" in
+                  FTP_*|BWS_*)
+                    ;;
+                  *)
+                    printf '%s=%s\n' "$key" "$value" >> .env
+                    ;;
+                esac
+                
               done
 
           cat >> .env <<EOF
