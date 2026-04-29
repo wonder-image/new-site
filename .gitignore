@@ -2,9 +2,15 @@
 # OS files
 .DS_Store
 
+# Claude Code
+.claude/
+
 # Dependencies
 /vendor/
 /node_modules/
+
+# Asset library (generata in CI da npm ci)
+/assets/lib/
 
 # Environment files
 /.env

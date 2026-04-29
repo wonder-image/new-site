@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "24165bbc3eb09182f1bb498456426fa6",
+    "content-hash": "d6f5ff3f9e42013eafe265d99567f3c8",
     "packages": [
         {
             "name": "chillerlan/php-qrcode",
@@ -4286,12 +4286,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/wonder-image/app.git",
-                "reference": "fe1a03ef907c34db1bd0c79a97c835a8b1d9c3ef"
+                "reference": "8a1bc379fb90718022e47f1e2983be52a702dd8d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/wonder-image/app/zipball/fe1a03ef907c34db1bd0c79a97c835a8b1d9c3ef",
-                "reference": "fe1a03ef907c34db1bd0c79a97c835a8b1d9c3ef",
+                "url": "https://api.github.com/repos/wonder-image/app/zipball/8a1bc379fb90718022e47f1e2983be52a702dd8d",
+                "reference": "8a1bc379fb90718022e47f1e2983be52a702dd8d",
                 "shasum": ""
             },
             "require": {
@@ -4337,12 +4337,12 @@
                 "issues": "https://github.com/wonder-image/app/issues",
                 "source": "https://github.com/wonder-image/app/tree/main"
             },
-            "time": "2026-04-16T14:49:07+00:00"
+            "time": "2026-04-28T09:12:31+00:00"
         }
     ],
     "packages-dev": [],
     "aliases": [],
-    "minimum-stability": "dev",
+    "minimum-stability": "stable",
     "stability-flags": {
         "wonder-image/app": 20
     },
@@ -4352,5 +4352,5 @@
         "php": "^8.2"
     },
     "platform-dev": {},
-    "plugin-api-version": "2.6.0"
+    "plugin-api-version": "2.9.0"
 }

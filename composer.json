@@ -11,7 +11,7 @@
         "php": "^8.2",
         "wonder-image/app": "dev-main"
     },
-    "minimum-stability": "dev",
+    "minimum-stability": "stable",
     "prefer-stable": true,
     "autoload": {
         "psr-4": {

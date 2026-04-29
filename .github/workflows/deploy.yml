@@ -47,6 +47,7 @@ jobs:
         run: |
           set -euo pipefail
 
+          umask 077
           : > .env
 
           bws secret list "$BWS_PROJECT_ID" \
@@ -55,18 +56,32 @@ jobs:
                 key="$(echo "$item" | jq -r '.key')"
                 value="$(echo "$item" | jq -r '.value')"
 
-                # Tutti i secret servono al job
-                printf '%s=%s\n' "$key" "$value" >> "$GITHUB_ENV"
+                # Maschera sempre
+                echo "::add-mask::$value"
 
-                # Solo i secret applicativi finiscono nel .env
+                if [[ "$value" == *$'\n'* ]]; then
+                  # ✅ MULTILINE → formato speciale GitHub
+                  {
+                    echo "$key<<EOF"
+                    echo "$value"
+                    echo "EOF"
+                  } >> "$GITHUB_ENV"
+                else
+                  # ✅ SINGLE LINE → safe
+                  printf '%s=%s\n' "$key" "$value" >> "$GITHUB_ENV"
+                fi
+
+                # .env → meglio sempre single-line (flatten)
+                clean_value="$(printf '%s' "$value" | tr -d '\r' | tr '\n' ' ')"
+
                 case "$key" in
                   FTP_*|BWS_*)
                     ;;
                   *)
-                    printf '%s=%s\n' "$key" "$value" >> .env
+                    printf '%s=%s\n' "$key" "$clean_value" >> .env
                     ;;
                 esac
-                
+
               done
 
           cat >> .env <<EOF
@@ -85,14 +100,21 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          
           path="${FTP_REMOTE_PATH:-}"
           [ -n "$path" ] || { echo "Missing FTP_REMOTE_PATH"; exit 1; }
+
           [[ "$path" != */ ]] && path="${path}/"
-          echo "FTP_REMOTE_PATH=$path" >> "$GITHUB_ENV"
+
+          echo "::add-mask::$path"
+          printf 'FTP_REMOTE_PATH=%s\n' "$path" >> "$GITHUB_ENV"
           
-      - name: 📦 Installa Pacchetti
+      - name: 📦 Installa Pacchetti PHP
         run: composer install --no-dev --optimize-autoloader --no-scripts
-        
+
+      - name: 📦 Installa Pacchetti JS
+        run: npm ci
+
       - name: 📂 Sincronizza file FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
@@ -112,6 +134,7 @@ jobs:
               **/composer.lock
               **/package.json
               **/package-lock.json
+              **/node_modules/**
               *.md
 
       - name: 🗄️ Update App
