@@ -4,6 +4,6 @@
         "postinstall": "mkdir -p assets/lib/wonder-image && cp -r node_modules/wonder-image/dist assets/lib/wonder-image/dist"
     },
     "dependencies": {
-        "wonder-image": "^2.0.6"
+        "wonder-image": "^2.0.8"
     }
 }
