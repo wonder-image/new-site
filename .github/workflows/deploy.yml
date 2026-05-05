@@ -12,6 +12,7 @@ jobs:
     env:
       BWS_ACCESS_TOKEN: ${{ secrets.BWS_ACCESS_TOKEN }}
       BWS_PROJECT_ID: ${{ secrets.BWS_PROJECT_ID }}
+      GITHUB_API_TOKEN: ${{ secrets.GITHUB_API_TOKEN }}
     steps:
     
       - name: 🚚 Get latest code
@@ -141,6 +142,13 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+
+          if [ -z "${GITHUB_API_TOKEN:-}" ]; then
+            echo "::error::Manca il secret GITHUB_API_TOKEN nei GitHub Secrets della repo."
+            echo "::error::Aggiungilo con: gh secret set GITHUB_API_TOKEN --repo <owner>/<repo> --body \"<token>\""
+            echo "::error::Il valore deve corrispondere a quello restituito da Wonder\\App\\Credentials::appToken() sull'app target."
+            exit 1
+          fi
 
           curl -fsS --retry 3 --retry-all-errors \
             -X POST "https://${{ vars.APP_DOMAIN }}/api/app/update/" \
