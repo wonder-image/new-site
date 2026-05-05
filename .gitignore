@@ -24,7 +24,6 @@
 *.log
 
 # Generated/local site configuration
-/.htaccess
 /robots.txt
 /handler/index.php
 /assets/0.0/css/set-up/color.css
