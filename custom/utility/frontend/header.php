@@ -1,3 +1,19 @@
+<?php
+    /**
+     * Header del sito.
+     *
+     * Legge le voci nav da custom/config/navigation.php (sorgente unica:
+     * desktop + mobile usano lo stesso array).
+     *
+     * Per aggiungere una voce: aggiungi una entry in custom/config/navigation.php
+     * + la label corrispondente in lang/{locale}/components.json sotto
+     * components.navigation.{key}.
+     *
+     * Il rendering del singolo link è delegato a components/ui/nav-link.php.
+     */
+
+    $nav = require $_SERVER['DOCUMENT_ROOT'].'/custom/config/navigation.php';
+?>
 <header class="bg-primary">
     <div class="content">
 
@@ -12,8 +28,11 @@
 
         <div class="center phone-none">
             <div class="d-flex tx-white gap-4 tx-upper">
-            <a href="<?=__u()?>" class="tx-none"> <?=__t("components.navigation.home")?> </a>
-            <a href="<?=__u('contact')?>" class="tx-none"> <?=__t("components.navigation.contact")?> </a>
+                <?php foreach ($nav as $item) :
+                    $args = ['item' => $item, 'cssClass' => 'tx-none'];
+                    include $_SERVER['DOCUMENT_ROOT'].'/custom/components/ui/nav-link.php';
+                endforeach; ?>
+            </div>
         </div>
 
         <div id="hamburger" class="c-h f-end pc-none tablet-none" onclick="menuMobile()">
@@ -32,8 +51,10 @@
     <div class="content bg-white">
 
         <div class="nav-list">
-            <a href="<?=__u()?>" class="nav"> <?=__t("components.navigation.home")?> </a>
-            <a href="<?=__u('contact')?>" class="nav"> <?=__t("components.navigation.contact")?> </a>
+            <?php foreach ($nav as $item) :
+                $args = ['item' => $item, 'cssClass' => 'nav'];
+                include $_SERVER['DOCUMENT_ROOT'].'/custom/components/ui/nav-link.php';
+            endforeach; ?>
         </div>
 
     </div>
