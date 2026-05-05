@@ -17,6 +17,9 @@
 /.env.*
 !/.env.example
 
+# Hosting credentials (use INFO.example.md as template)
+/INFO.md
+
 # Logs
 *.log
 
