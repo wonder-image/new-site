@@ -116,6 +116,9 @@ jobs:
       - name: 📦 Installa Pacchetti JS
         run: npm ci
 
+      - name: 🧱 Build static files (handler/index.php, .htaccess)
+        run: php forge build
+
       - name: 📂 Sincronizza file FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
@@ -136,6 +139,7 @@ jobs:
               **/package.json
               **/package-lock.json
               **/node_modules/**
+              forge
               *.md
 
       - name: 🗄️ Update App
