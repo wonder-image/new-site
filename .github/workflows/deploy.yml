@@ -12,7 +12,10 @@ jobs:
     env:
       BWS_ACCESS_TOKEN: ${{ secrets.BWS_ACCESS_TOKEN }}
       BWS_PROJECT_ID: ${{ secrets.BWS_PROJECT_ID }}
-      GITHUB_API_TOKEN: ${{ secrets.GITHUB_API_TOKEN }}
+      # Bearer per /api/app/update/. Sincronizzato da `forge provision`
+      # come secret della repo (i nomi GITHUB_* non sono ammessi da
+      # GitHub, quindi il vecchio GITHUB_API_TOKEN è rinominato qui).
+      APP_DEPLOY_TOKEN: ${{ secrets.APP_DEPLOY_TOKEN }}
     steps:
     
       - name: 🚚 Get latest code
@@ -147,10 +150,15 @@ jobs:
         run: |
           set -euo pipefail
 
-          if [ -z "${GITHUB_API_TOKEN:-}" ]; then
-            echo "::error::Manca il secret GITHUB_API_TOKEN nei GitHub Secrets della repo."
-            echo "::error::Aggiungilo con: gh secret set GITHUB_API_TOKEN --repo <owner>/<repo> --body \"<token>\""
-            echo "::error::Il valore deve corrispondere a Wonder\\App\\Credentials::appToken() sull'app target o al valore generato da php forge provision in Bitwarden."
+          # Fallback al vecchio nome per non rompere siti che ancora hanno
+          # GITHUB_API_TOKEN nel .env locale ma non hanno ancora rilanciato
+          # `forge provision` aggiornato.
+          deploy_token="${APP_DEPLOY_TOKEN:-${GITHUB_API_TOKEN:-}}"
+
+          if [ -z "$deploy_token" ]; then
+            echo "::error::Manca il secret APP_DEPLOY_TOKEN nei GitHub Secrets della repo."
+            echo "::error::Generalo con: php forge provision (locale)"
+            echo "::error::Oppure manualmente: gh secret set APP_DEPLOY_TOKEN --repo <owner>/<repo> --body \"\$(php -r 'echo bin2hex(random_bytes(32));')\""
             exit 1
           fi
 
@@ -163,7 +171,7 @@ jobs:
           status=$(curl -sS --retry 3 --retry-all-errors \
             -o "$response_body" -w '%{http_code}' \
             -X POST "https://${{ vars.APP_DOMAIN }}/api/app/update/" \
-            -H "Authorization: Bearer $GITHUB_API_TOKEN" \
+            -H "Authorization: Bearer $deploy_token" \
             -H "Content-Type: application/json" \
             -d "{\"release_id\":\"$GITHUB_SHA\",\"source\":\"github\"}" \
             || echo '000')
