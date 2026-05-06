@@ -150,12 +150,31 @@ jobs:
           if [ -z "${GITHUB_API_TOKEN:-}" ]; then
             echo "::error::Manca il secret GITHUB_API_TOKEN nei GitHub Secrets della repo."
             echo "::error::Aggiungilo con: gh secret set GITHUB_API_TOKEN --repo <owner>/<repo> --body \"<token>\""
-            echo "::error::Il valore deve corrispondere a quello restituito da Wonder\\App\\Credentials::appToken() sull'app target."
+            echo "::error::Il valore deve corrispondere a Wonder\\App\\Credentials::appToken() sull'app target o al valore generato da php forge provision in Bitwarden."
             exit 1
           fi
 
-          curl -fsS --retry 3 --retry-all-errors \
+          # `-fsS` nasconde il body in caso di error HTTP. Lo togliamo e
+          # gestiamo manualmente: catturiamo body + status, li stampiamo,
+          # poi falliamo lo step se status >= 400. Così il messaggio JSON
+          # restituito da /api/app/update/ (anche in caso di 500 con
+          # exception interna) finisce nei log dell'Action.
+          response_body=$(mktemp)
+          status=$(curl -sS --retry 3 --retry-all-errors \
+            -o "$response_body" -w '%{http_code}' \
             -X POST "https://${{ vars.APP_DOMAIN }}/api/app/update/" \
             -H "Authorization: Bearer $GITHUB_API_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"release_id\":\"$GITHUB_SHA\",\"source\":\"github\"}"
+            -d "{\"release_id\":\"$GITHUB_SHA\",\"source\":\"github\"}" \
+            || echo '000')
+
+          echo "HTTP status: $status"
+          echo "--- response body ---"
+          cat "$response_body" || true
+          echo
+          echo "--- end response body ---"
+
+          if [[ "$status" -lt 200 || "$status" -ge 300 ]]; then
+            echo "::error::Update App ha risposto $status. Controlla il body sopra per il dettaglio dell'errore."
+            exit 1
+          fi
