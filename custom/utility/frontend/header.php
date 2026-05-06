@@ -9,7 +9,8 @@
      * + la label corrispondente in lang/{locale}/components.json sotto
      * components.navigation.{key}.
      *
-     * Il rendering del singolo link è delegato a components/ui/nav-link.php.
+     * Il rendering della singola voce è delegato a components/ui/nav-item.php
+     * (gestisce link + eventuale subnav children).
      */
 
     $nav = require $_SERVER['DOCUMENT_ROOT'].'/custom/config/navigation.php';
@@ -30,7 +31,7 @@
             <div class="d-flex tx-white gap-4 tx-upper">
                 <?php foreach ($nav as $item) :
                     $args = ['item' => $item, 'cssClass' => 'tx-none'];
-                    include $_SERVER['DOCUMENT_ROOT'].'/custom/components/ui/nav-link.php';
+                    include $_SERVER['DOCUMENT_ROOT'].'/custom/components/ui/nav-item.php';
                 endforeach; ?>
             </div>
         </div>
@@ -53,7 +54,7 @@
         <div class="nav-list">
             <?php foreach ($nav as $item) :
                 $args = ['item' => $item, 'cssClass' => 'nav'];
-                include $_SERVER['DOCUMENT_ROOT'].'/custom/components/ui/nav-link.php';
+                include $_SERVER['DOCUMENT_ROOT'].'/custom/components/ui/nav-item.php';
             endforeach; ?>
         </div>
 
