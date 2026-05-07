@@ -1,10 +1,16 @@
 # ----------------------------------------------------------------------
+# Apache options (necessari su molti shared hosting per il RewriteRule)
+# ----------------------------------------------------------------------
+Options +FollowSymLinks -MultiViews
+
+# ----------------------------------------------------------------------
 # Forza HTTPS e WWW
 # ----------------------------------------------------------------------
 <IfModule mod_rewrite.c>
   RewriteEngine On
+  RewriteBase /
 
-  # Passa Authorization/Bearer
+  # Passa Authorization/Bearer (CGI/FastCGI mangiano l'header senza questo)
   RewriteCond %{HTTP:Authorization} .
   RewriteRule ^ - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 
@@ -17,7 +23,14 @@
   # RewriteCond %{HTTP_HOST} !^(localhost|127\.0\.0\.1)(:\d+)?$ [NC]
   # RewriteCond %{HTTP_HOST} !^www\. [NC]
   # RewriteRule ^ https://www.%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
- 
+
+  # Le cartelle runtime /backend e /api esistono fisicamente (create da
+  # `forge build`), ma devono comunque passare sempre dal router. Senza
+  # questa regola Apache vede /backend/ come directory esistente, non
+  # trova un index, e con `Options -Indexes` risponde 403 Forbidden.
+  RewriteCond %{REQUEST_URI} ^/(backend|api)(?:/.*)?$ [NC]
+  RewriteRule ^ handler/index.php [L,QSA]
+
   # Aggiunge slash finale se mancante (solo per URL senza estensione)
   RewriteCond %{REQUEST_URI} !^/handler(?:/.*)?$ [NC]
   RewriteCond %{REQUEST_FILENAME} !-f
@@ -25,8 +38,9 @@
   RewriteCond %{REQUEST_URI} !/$
   RewriteCond %{REQUEST_URI} !\.[^./]+$
   RewriteRule ^(.*)$ /$1/ [R=301,L]
-  
-  # Router Wonder
+
+  # Router Wonder: tutto ciò che non è file/directory esistente va al
+  # front controller handler/index.php
   RewriteCond %{REQUEST_URI} !^/handler(?:/.*)?$ [NC]
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
