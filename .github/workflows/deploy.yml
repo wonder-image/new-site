@@ -100,6 +100,18 @@ jobs:
 
           EOF
 
+          # APP_DEPLOY_TOKEN deve finire nel .env di produzione perché
+          # /api/app/update/ lo legge da $_ENV per autorizzare la richiesta
+          # del workflow (deploy bootstrap bypass del flow JWT). Il secret
+          # è già esposto nel blocco env del job, quindi è disponibile come
+          # variabile shell qui sotto.
+          if [ -n "${APP_DEPLOY_TOKEN:-}" ]; then
+            echo "::add-mask::$APP_DEPLOY_TOKEN"
+            printf 'APP_DEPLOY_TOKEN=%s\n' "$APP_DEPLOY_TOKEN" >> .env
+          else
+            echo "::warning::APP_DEPLOY_TOKEN secret non impostato: lo step 'Update App' fallirà."
+          fi
+
       - name: Normalize FTP path
         shell: bash
         run: |
