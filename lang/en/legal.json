@@ -1,0 +1,49 @@
+{
+    "cookie_policy": {
+        "seo": {
+            "title": "Cookie Policy - {{society_name}}",
+            "description": "Cookie policy of {{society_name}}."
+        },
+        "content": {
+            "title": "Cookie Policy",
+            "paragraphs": [
+                {
+                    "title": "Content being updated",
+                    "text": "Add the cookie policy paragraphs here by editing lang/en/legal.json."
+                }
+            ]
+        }
+    },
+    "privacy_policy": {
+        "seo": {
+            "title": "Privacy Policy - {{society_name}}",
+            "description": "Privacy policy of {{society_name}}."
+        },
+        "content": {
+            "title": "Privacy Policy",
+            "subtitle": "",
+            "paragraphs": [
+                {
+                    "title": "Content being updated",
+                    "text": "Add the privacy policy paragraphs here by editing lang/en/legal.json."
+                }
+            ],
+            "payoff": ""
+        }
+    },
+    "terms_conditions": {
+        "seo": {
+            "title": "Terms and conditions - {{society_name}}",
+            "description": "Terms and conditions of {{society_name}}."
+        },
+        "content": {
+            "title": "Terms and conditions",
+            "paragraphs": [
+                {
+                    "title": "Content being updated",
+                    "text": "Add the terms and conditions paragraphs here by editing lang/en/legal.json."
+                }
+            ]
+        }
+    }
+}

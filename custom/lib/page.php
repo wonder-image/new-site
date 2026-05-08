@@ -36,10 +36,47 @@
 
         require_once $GLOBALS['ROOT'].'/vendor/wonder-image/app/wonder-image.php';
 
+        // I template inclusi (head.php, body-start.php, header.php, footer.php,
+        // body-end.php) sono nati per essere caricati a TOP-LEVEL: leggono
+        // direttamente $SEO, $SOCIETY, $PATH, $DEFAULT, $ANALYTICS, $DB,
+        // $MYSQLI_CONNECTION, $USER, $ALERT, ecc. senza `global` declaration.
+        //
+        // Quando `renderPage()` è invocata da una route (cioè dentro a una
+        // funzione), quei simboli sono globals che NON entrano automaticamente
+        // nello scope della funzione: head.php farebbe `$PATH->css` su null,
+        // crash.
+        //
+        // Importo tutti i legacy-globals registrati in `LegacyGlobals` (l'unica
+        // fonte di verità sulla lista dei nomi) come variabili locali, by-ref,
+        // così le modifiche fatte nei template (es. `$SEO->title = ...`) si
+        // propagano correttamente al global.
+        foreach (\Wonder\App\LegacyGlobals::names() as $__legacyKey) {
+            if (array_key_exists($__legacyKey, $GLOBALS)) {
+                $$__legacyKey = &$GLOBALS[$__legacyKey];
+            }
+        }
+
+        // Variabili setup-globali NON registrate in LegacyGlobals ma usate
+        // dai template (statistiche head.php, ecc.).
+        foreach ([
+            'ACTIVE_STATISTICS',
+            'VISITOR_ID',
+            'SESSION_ID',
+            'REGISTERED_USER',
+            'USER_ID',
+            'NAV_BACKEND',
+            'PAGE_KEY',
+        ] as $__extraKey) {
+            if (array_key_exists($__extraKey, $GLOBALS)) {
+                $$__extraKey = &$GLOBALS[$__extraKey];
+            }
+        }
+
         $ROOT     = $GLOBALS['ROOT'];
         $ROOT_APP = $GLOBALS['ROOT_APP'];
         $SEO      = $GLOBALS['SEO'] ?? (object) [];
         $GLOBALS['PAGE_KEY'] = $key;
+        $PAGE_KEY = $key;
 
         // SEO defaults (override possibile via $config['seo'])
         $SEO->title       = $config['seo']['title']       ?? __t("pages.{$key}.seo.title");

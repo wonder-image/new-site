@@ -1,0 +1,49 @@
+{
+    "cookie_policy": {
+        "seo": {
+            "title": "Cookie Policy - {{society_name}}",
+            "description": "Informativa sull'uso dei cookie di {{society_name}}."
+        },
+        "content": {
+            "title": "Cookie Policy",
+            "paragraphs": [
+                {
+                    "title": "Contenuto in aggiornamento",
+                    "text": "Inserisci qui i paragrafi della cookie policy modificando lang/it/legal.json."
+                }
+            ]
+        }
+    },
+    "privacy_policy": {
+        "seo": {
+            "title": "Privacy Policy - {{society_name}}",
+            "description": "Informativa sul trattamento dei dati personali di {{society_name}}."
+        },
+        "content": {
+            "title": "Privacy Policy",
+            "subtitle": "",
+            "paragraphs": [
+                {
+                    "title": "Contenuto in aggiornamento",
+                    "text": "Inserisci qui i paragrafi della privacy policy modificando lang/it/legal.json."
+                }
+            ],
+            "payoff": ""
+        }
+    },
+    "terms_conditions": {
+        "seo": {
+            "title": "Termini e condizioni - {{society_name}}",
+            "description": "Termini e condizioni d'uso del sito {{society_name}}."
+        },
+        "content": {
+            "title": "Termini e condizioni",
+            "paragraphs": [
+                {
+                    "title": "Contenuto in aggiornamento",
+                    "text": "Inserisci qui i paragrafi dei termini e condizioni modificando lang/it/legal.json."
+                }
+            ]
+        }
+    }
+}
