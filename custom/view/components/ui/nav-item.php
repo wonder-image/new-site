@@ -15,12 +15,12 @@
      * `.nav-children`, e la classe del link passata in `$args['cssClass']`.
      *
      * Argomenti (in $args):
-     * - item     : array   voce nav { key, url, external?, children? } (richiesto)
+     * - item     : array   voce nav { key, url?, route?, external?, children? } (richiesto)
      * - cssClass : string  classe CSS del link (default: 'tx-none')
      *
      * Convenzione children:
-     * Ogni figlio è una voce con la stessa struttura del parent (key, url,
-     * external?, children?). La ricorsione è intenzionale.
+     * Ogni figlio è una voce con la stessa struttura del parent (key, url?,
+     * route?, external?, children?). La ricorsione è intenzionale.
      */
     $args     = $args ?? [];
     $item     = $args['item'];

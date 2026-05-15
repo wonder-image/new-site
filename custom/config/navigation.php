@@ -11,13 +11,15 @@
      * Convenzioni per ogni voce:
      * - `key`      : identificatore stabile, usato come chiave i18n.
      *                Esempi: 'home', 'contact', 'services', 'service_a'.
-     * - `url`      : risolto via `__u()`; '' = homepage.
+     * - `url`      : opzionale. Path risolto via `__u()`; '' = homepage.
+     * - `route`    : opzionale. Nome route risolto via `__r()`. Se presente,
+     *                ha precedenza su `url`.
      * - `external` : opzionale. Se true, l'href è usato as-is (no __u())
      *                e l'<a> riceve target="_blank" rel="noopener…".
      * - `children` : opzionale. Array di altre voci con la stessa
      *                struttura (subnav statica). Ricorsivo: ogni figlio
      *                può a sua volta avere `children`. Vedi
-     *                custom/components/ui/nav-item.php.
+     *                custom/view/components/ui/nav-item.php.
      * - `visible`  : opzionale, riservato per uso futuro
      *                ('private' = solo loggati; 'public' = solo
      *                non-loggati; assenza = sempre visibile).
@@ -35,16 +37,17 @@
         //
         // [
         //     'key'      => 'services',
-        //     'url'      => 'services',
+        //     'route'    => 'services',
         //     'children' => [
-        //         [ 'key' => 'service_a', 'url' => 'services/a' ],
-        //         [ 'key' => 'service_b', 'url' => 'services/b' ],
+        //         [ 'key' => 'service_a', 'route' => 'services.a' ],
+        //         [ 'key' => 'service_b', 'route' => 'services.b' ],
         //     ],
         // ],
 
         [
             'key' => 'contact',
             'url' => 'contact',
+            'route' => 'contact',
         ],
 
     ];

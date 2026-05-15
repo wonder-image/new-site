@@ -4,8 +4,8 @@
      *
      * Variabili disponibili in scope: $SOCIETY (set dal framework).
      *
-     * Per il form contatto vedi: custom/components/sections/contact-form.php
-     * Per la barra legale       vedi: custom/components/layout/legal-bar.php
+     * Per il form contatto vedi: custom/view/components/sections/contact-form.php
+     * Per la barra legale       vedi: custom/view/components/layout/legal-bar.php
      *
      * STATUS: 2a — additivo. Non ancora incluso da custom/utility/frontend/footer.php.
      */

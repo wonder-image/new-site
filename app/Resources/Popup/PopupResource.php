@@ -160,7 +160,7 @@ final class PopupResource extends Resource
     public static function navigationSchema(): NavigationSchema
     {
         return NavigationSchema::for(static::class)
-            ->section('Sito', 'site', 'bi-globe')
+            ->section('Avvisi', 'notices', 'bi-megaphone')
             ->title('Popup')
             ->order(30)
             ->authority(['admin', 'administrator']);

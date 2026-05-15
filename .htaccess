@@ -19,33 +19,6 @@ Options +FollowSymLinks -MultiViews
   RewriteCond %{HTTPS} !=on
   RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
-  # Forza WWW fuori dall'ambiente locale
-  # RewriteCond %{HTTP_HOST} !^(localhost|127\.0\.0\.1)(:\d+)?$ [NC]
-  # RewriteCond %{HTTP_HOST} !^www\. [NC]
-  # RewriteRule ^ https://www.%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
-
-  # Le cartelle runtime /backend e /api esistono fisicamente (create da
-  # `forge build`), ma devono comunque passare sempre dal router. Senza
-  # questa regola Apache vede /backend/ come directory esistente, non
-  # trova un index, e con `Options -Indexes` risponde 403 Forbidden.
-  RewriteCond %{REQUEST_URI} ^/(backend|api)(?:/.*)?$ [NC]
-  RewriteRule ^ handler/index.php [L,QSA]
-
-  # Aggiunge slash finale se mancante (solo per URL senza estensione)
-  RewriteCond %{REQUEST_URI} !^/handler(?:/.*)?$ [NC]
-  RewriteCond %{REQUEST_FILENAME} !-f
-  RewriteCond %{REQUEST_FILENAME} !-d
-  RewriteCond %{REQUEST_URI} !/$
-  RewriteCond %{REQUEST_URI} !\.[^./]+$
-  RewriteRule ^(.*)$ /$1/ [R=301,L]
-
-  # Router Wonder: tutto ciò che non è file/directory esistente va al
-  # front controller handler/index.php
-  RewriteCond %{REQUEST_URI} !^/handler(?:/.*)?$ [NC]
-  RewriteCond %{REQUEST_FILENAME} !-f
-  RewriteCond %{REQUEST_FILENAME} !-d
-  RewriteRule ^ handler/index.php [L,QSA]
-
 </IfModule>
 
 # ----------------------------------------------------------------------
@@ -132,3 +105,24 @@ FileETag MTime Size
 Options -Indexes
 AddDefaultCharset UTF-8
 DefaultLanguage it
+
+# WONDER ROUTER START
+  # Le cartelle runtime /backend e /api esistono fisicamente, ma devono
+  # comunque passare sempre dal router.
+  RewriteCond %{REQUEST_URI} ^/(backend|api)(?:/.*)?$ [NC]
+  RewriteRule ^ handler/index.php [L,QSA]
+
+  # Aggiunge slash finale se mancante (solo per URL senza estensione)
+  RewriteCond %{REQUEST_URI} !^/handler(?:/.*)?$ [NC]
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{REQUEST_URI} !/$
+  RewriteCond %{REQUEST_URI} !\.[^./]+$
+  RewriteRule ^(.*)$ // [R=301,L]
+
+  # Router Wonder
+  RewriteCond %{REQUEST_URI} !^/handler(?:/.*)?$ [NC]
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule ^ handler/index.php [L,QSA]
+# WONDER ROUTER END

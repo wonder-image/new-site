@@ -52,7 +52,7 @@
                         <?=inputRecaptcha()?>
                     </div>
                     <div class="col-2">
-                        <?=submit(__t('components.buttons.send'), 'send', 'btn-primary f-end', "formSubmit(this.form)")?>
+                        <?=submit(__t('components.buttons.send'), 'send', 'btn-primary f-end', "formSubmit(this.form, '/resource/forms-contact/', contactFormSubmitResponse)")?>
                     </div>
                 </form>
             </div>

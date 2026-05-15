@@ -19,8 +19,8 @@ happens under `custom/` and `assets/`.
   - `custom/build/table/` — one PHP file per DB table; loaded by glob from the framework
   - `custom/build/page/`, `custom/build/row/` — additional page/row schemas
   - `custom/function/function.php` — project-level helpers (currently empty)
-  - `custom/class/` — PSR-4 `App\\` classes (autoload via `composer.json`)
   - `custom/routes/` — custom Symfony routes
+- `app/` — PSR-4 `App\\` classes (`Models/`, `Resources/`, services/support classes)
 - `assets/` — public web assets
   - `assets/0.0/css/set-up/` — `root.css` (design tokens) + `color.css` (color utility classes, **generated**, gitignored)
   - `assets/0.0/{images,js,icons}/` — site assets
@@ -49,7 +49,7 @@ If `.env` values are missing, `forge start` fills `APP_URL`, `APP_KEY`, `DB_*`, 
 
 ## Coding conventions
 
-- New PHP classes go under `custom/class/` with namespace `App\\` (PSR-4).
+- New PHP classes go under `app/` with namespace `App\\` (PSR-4).
 - Project helpers go in `custom/function/function.php` (or new files alongside it).
 - DB table schemas: **one file per table** under `custom/build/table/`. Files are loaded by glob — do not centralize them in a single megafile.
 - For backend forms / pages built on top of the framework, follow the framework conventions:
@@ -71,7 +71,7 @@ If `.env` values are missing, `forge start` fills `APP_URL`, `APP_KEY`, `DB_*`, 
 
 The following files mix layout + logic and are scheduled for splitting. Do not extend them — extract instead:
 
-- [custom/utility/frontend/footer.php](custom/utility/frontend/footer.php) — contains site footer **+ inline contact form** + legal bar (controlled by undocumented `$FOOTER_CONTACT*` flags). Target split: `custom/components/layout/site-footer.php`, `custom/components/sections/contact-form.php`, `custom/components/layout/legal-bar.php`.
+- [custom/utility/frontend/footer.php](custom/utility/frontend/footer.php) — contains site footer **+ inline contact form** + legal bar (controlled by undocumented `$FOOTER_CONTACT*` flags). Target split: `custom/view/components/layout/site-footer.php`, `custom/view/components/sections/contact-form.php`, `custom/view/components/layout/legal-bar.php`.
 - [custom/utility/frontend/body-start.php](custom/utility/frontend/body-start.php) — pure popup logic with inline SQL + escaped HTML. Target: a `PopupSchema` class or a pure renderer.
 - [custom/utility/frontend/header.php](custom/utility/frontend/header.php) — nav is hardcoded twice (desktop + mobile). Target: nav array in `custom/config/navigation.php`, single iteration.
 - Page entry points (`index.php`, `demo.php`, `contact/index.php`, `legal/*/index.php`) — duplicated boilerplate. Target: a `page([...])` factory under `custom/lib/page.php`.
@@ -80,17 +80,18 @@ Target structure (when refactor lands):
 
 ```
 custom/
-├── components/
-│   ├── layout/        # site-header, site-footer, legal-bar
-│   ├── sections/      # hero, contact-form, cta
-│   ├── ui/            # card, button-group
-│   └── functional/    # popup, cookie-banner
-├── pages/             # one ~10-line file per page, via page() factory
+├── view/
+│   ├── components/
+│   │   ├── layout/      # site-header, site-footer, legal-bar
+│   │   ├── sections/    # hero, contact-form, cta
+│   │   ├── ui/          # card, button-group
+│   │   └── functional/  # popup, cookie-banner
+│   └── pages/         # one ~10-line file per page, via page() factory
 ├── features/          # contact-form (handler), popup (data)
 ├── lib/page.php       # page factory
 ├── config/            # site, navigation, pages, lang, permissions
 ├── build/{tables,pages,rows}/
-└── class/             # App\\
+app/                   # App\\ classes
 ```
 
 ## Validation before commit

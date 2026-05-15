@@ -3,8 +3,8 @@
      * Footer del sito (orchestratore).
      *
      * Delega a tre componenti puri introdotti in fase 2a:
-     * - components/sections/contact-form.php   (form contatti, opzionale)
-     * - components/layout/site-footer.php       (logo, indirizzo, contatti, legal-bar)
+     * - view/components/sections/contact-form.php (form contatti, opzionale)
+     * - view/components/layout/site-footer.php    (logo, indirizzo, contatti, legal-bar)
      *
      * Variabili in scope (set dalla pagina, tutte opzionali):
      * - $FOOTER_CONTACT          : bool. Default true. Mostra/nasconde la sezione form.
@@ -21,7 +21,7 @@
             'title'    => $FOOTER_CONTACT_TITLE    ?? null,
             'subtitle' => $FOOTER_CONTACT_SUBTITLE ?? null,
         ];
-        include __DIR__.'/../../components/sections/contact-form.php';
+        include __DIR__.'/../../view/components/sections/contact-form.php';
     }
 
-    include __DIR__.'/../../components/layout/site-footer.php';
+    include __DIR__.'/../../view/components/layout/site-footer.php';

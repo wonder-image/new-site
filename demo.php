@@ -25,7 +25,7 @@
         'render' => function () {
             // Contenuto della home — vuoto, come la demo originale.
             // Aggiungere qui sezioni con include diretto, es:
-            //   include $_SERVER['DOCUMENT_ROOT'].'/custom/components/sections/hero.php';
+            //   include $_SERVER['DOCUMENT_ROOT'].'/custom/view/components/sections/hero.php';
         },
     ]);
     

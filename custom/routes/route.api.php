@@ -22,13 +22,4 @@ Route::area('api')
     ->name('api.')
     ->group(function () use ($ROOT) {
 
-        Route::name('frontend.')
-            ->prefix('/frontend')
-            ->group(function () use ($ROOT) {
-
-                Route::post('/form/', $ROOT.'/custom/pages/api/frontend/form.php')
-                    ->name('form');
-
-            });
-
     });

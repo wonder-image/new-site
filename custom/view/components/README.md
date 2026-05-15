@@ -1,4 +1,4 @@
-# custom/components/
+# custom/view/components/
 
 Componenti del progetto, organizzati per **responsabilità** (non per pagina).
 
@@ -32,18 +32,18 @@ Tre forme:
 
 1. **Include diretto** (componente senza argomenti):
    ```php
-   include $ROOT.'/custom/components/layout/site-footer.php';
+   include $ROOT.'/custom/view/components/layout/site-footer.php';
    ```
 
 2. **Include con argomenti** (sezioni configurabili):
    ```php
    $args = ['showMap' => false, 'title' => 'Scrivici'];
-   include $ROOT.'/custom/components/sections/contact-form.php';
+   include $ROOT.'/custom/view/components/sections/contact-form.php';
    ```
 
 3. **Funzione** (componenti functional):
    ```php
-   require_once $ROOT.'/custom/components/functional/popup.php';
+   require_once $ROOT.'/custom/view/components/functional/popup.php';
    renderPopup($PAGE_KEY);
    ```
 
@@ -52,5 +52,5 @@ Tre forme:
 - Pagine intere → `custom/pages/`
 - Schemi tabella DB → `custom/build/table/`
 - Helper di funzione globale → `custom/function/function.php`
-- Classi PHP con namespace → `custom/class/`
+- Classi PHP con namespace → `app/`
 - Configurazione (nav, pages, permessi) → `custom/config/`
