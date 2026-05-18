@@ -4,7 +4,7 @@
      * Voci di navigazione del sito.
      *
      * Sorgente unica: stesso array è iterato dal nav desktop e dal nav
-     * mobile (vedi custom/utility/frontend/header.php). I `key` sono usati
+     * mobile (vedi custom/view/components/frontend/layout/header.php). I `key` sono usati
      * per leggere le label da lang/{locale}/components.json sotto
      * `components.navigation.{key}`.
      *
@@ -19,7 +19,7 @@
      * - `children` : opzionale. Array di altre voci con la stessa
      *                struttura (subnav statica). Ricorsivo: ogni figlio
      *                può a sua volta avere `children`. Vedi
-     *                custom/view/components/ui/nav-item.php.
+     *                custom/view/components/frontend/ui/nav-item.php.
      * - `visible`  : opzionale, riservato per uso futuro
      *                ('private' = solo loggati; 'public' = solo
      *                non-loggati; assenza = sempre visibile).
@@ -29,7 +29,7 @@
 
         [
             'key' => 'home',
-            'url' => '',
+            'route' => 'home',
         ],
 
         // Esempio di voce con subnav (commentata: la `lang/{locale}/components.json`
@@ -46,8 +46,7 @@
 
         [
             'key' => 'contact',
-            'url' => 'contact',
             'route' => 'contact',
-        ],
+        ]
 
     ];

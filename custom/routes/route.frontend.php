@@ -25,7 +25,12 @@ use Wonder\Http\Route;
 
 Route::area('frontend')
     ->response('html')
-    ->group(function () use ($ROOT) {
+    ->group(function () use ($ROOT, $ROOT_APP) {
+
+        Route::get('/', $ROOT_APP.'/view/pages/frontend/default/under_construction.php');
+
+        Route::get('/demo.php', $ROOT.'/custom/view/pages/frontend/home.php')
+            ->name('home');
 
         Route::get('/contact/', $ROOT.'/custom/view/pages/frontend/contact.php')
             ->name('contact');

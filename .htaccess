@@ -19,6 +19,30 @@ Options +FollowSymLinks -MultiViews
   RewriteCond %{HTTPS} !=on
   RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
+  
+# WONDER ROUTER START
+  # Le cartelle runtime /backend e /api esistono fisicamente, ma devono
+  # comunque passare sempre dal router.
+  RewriteCond %{REQUEST_URI} ^/(backend|api)(?:/.*)?$ [NC]
+  RewriteRule ^ handler/index.php [L,QSA]
+
+  RewriteRule ^$ handler/index.php [L,QSA]
+
+  # Aggiunge slash finale se mancante (solo per URL senza estensione)
+  RewriteCond %{REQUEST_URI} !^/handler(?:/.*)?$ [NC]
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{REQUEST_URI} !/$
+  RewriteCond %{REQUEST_URI} !\.[^./]+$
+  RewriteRule ^(.*)$ // [R=301,L]
+
+  # Router Wonder
+  RewriteCond %{REQUEST_URI} !^/handler(?:/.*)?$ [NC]
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule ^ handler/index.php [L,QSA]
+# WONDER ROUTER END
+
 </IfModule>
 
 # ----------------------------------------------------------------------
@@ -105,24 +129,3 @@ FileETag MTime Size
 Options -Indexes
 AddDefaultCharset UTF-8
 DefaultLanguage it
-
-# WONDER ROUTER START
-  # Le cartelle runtime /backend e /api esistono fisicamente, ma devono
-  # comunque passare sempre dal router.
-  RewriteCond %{REQUEST_URI} ^/(backend|api)(?:/.*)?$ [NC]
-  RewriteRule ^ handler/index.php [L,QSA]
-
-  # Aggiunge slash finale se mancante (solo per URL senza estensione)
-  RewriteCond %{REQUEST_URI} !^/handler(?:/.*)?$ [NC]
-  RewriteCond %{REQUEST_FILENAME} !-f
-  RewriteCond %{REQUEST_FILENAME} !-d
-  RewriteCond %{REQUEST_URI} !/$
-  RewriteCond %{REQUEST_URI} !\.[^./]+$
-  RewriteRule ^(.*)$ // [R=301,L]
-
-  # Router Wonder
-  RewriteCond %{REQUEST_URI} !^/handler(?:/.*)?$ [NC]
-  RewriteCond %{REQUEST_FILENAME} !-f
-  RewriteCond %{REQUEST_FILENAME} !-d
-  RewriteRule ^ handler/index.php [L,QSA]
-# WONDER ROUTER END

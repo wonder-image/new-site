@@ -1,56 +1,38 @@
 # custom/view/components/
 
-Componenti del progetto, organizzati per **responsabilità** (non per pagina).
+Componenti del progetto organizzati per area, in linea con `wonder-image/app`.
 
-Regola d'oro: **un componente non può fare troppe cose**. Se un file è layout + logica + dati, va spezzato.
+Le cartelle base sono:
 
-## Cartelle
+- `frontend/`
+- `backend/`
 
-### `layout/`
-Pezzi visuali fissi del sito che compaiono ovunque. **Solo layout, niente query SQL, niente logica condizionale complessa.**
-- `site-footer.php` — il footer del sito.
-- `legal-bar.php` — barra link legali (privacy, cookie, terms).
-- (in 2b: `site-header.php` — header con nav che legge da `custom/config/navigation.php`)
+Dentro ogni area, i componenti si organizzano per responsabilita':
 
-### `sections/`
-Sezioni riusabili da pagine diverse: hero, contact-form, CTA, testimonials, gallery.
-**Solo layout** ma con possibilità di accettare argomenti via `$args` (vedi `contact-form.php`).
-- `contact-form.php` — sezione form contatto (con/senza mappa).
-
-### `ui/`
-Componenti atomici riusabili (card, button-group, badge wrap, ...). Vuoto ora, popolato all'occorrenza.
-**Mai logica, mai SQL.**
-
-### `functional/`
-Componenti con **logica e/o dati**. Possono fare query SQL, leggere sessione, validare input.
-**Niente layout HTML hardcoded** (preferire output costruito con i componenti `sections/` o `ui/`).
-- `popup.php` — funzione `renderPopup($pageKey)` che gestisce il popup di pagina.
+- `layout/` per head, body-start, header, footer, body-end e partial di layout
+- `ui/` per componenti atomici riusabili
+- `sections/` per sezioni di pagina riusabili
+- `overlay/` per modal, popup e overlay visuali
 
 ## Convenzione di chiamata
 
-Tre forme:
+Usa sempre `View::component(...)` invece di include manuali quando il file e' un componente renderizzabile.
 
-1. **Include diretto** (componente senza argomenti):
-   ```php
-   include $ROOT.'/custom/view/components/layout/site-footer.php';
-   ```
+Esempi:
 
-2. **Include con argomenti** (sezioni configurabili):
-   ```php
-   $args = ['showMap' => false, 'title' => 'Scrivici'];
-   include $ROOT.'/custom/view/components/sections/contact-form.php';
-   ```
+```php
+<?= \Wonder\View\View::component('frontend.layout.footer') ?>
 
-3. **Funzione** (componenti functional):
-   ```php
-   require_once $ROOT.'/custom/view/components/functional/popup.php';
-   renderPopup($PAGE_KEY);
-   ```
+<?= \Wonder\View\View::component('frontend.sections.contact-form', [
+    'showMap' => false,
+    'title' => 'Scrivici',
+]) ?>
+```
 
 ## Cosa NON mettere qui
 
-- Pagine intere → `custom/pages/`
-- Schemi tabella DB → `custom/build/table/`
-- Helper di funzione globale → `custom/function/function.php`
-- Classi PHP con namespace → `app/`
-- Configurazione (nav, pages, permessi) → `custom/config/`
+- Pagine intere -> `custom/view/pages/`
+- Schemi tabella DB -> `custom/build/table/`
+- Helper globali -> `custom/function/function.php`
+- Classi PHP con namespace -> `app/`
+- Configurazione -> `custom/config/`

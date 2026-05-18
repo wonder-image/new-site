@@ -8,18 +8,18 @@
 by the `postinstall` script).
 
 This is **not** a framework or a library: it is the actual site. Most of the work
-happens under `custom/` and `assets/`.
+happens under `custom/`, `app/`, and `assets/`.
 
 ## Directory structure
 
 - `custom/` — everything project-specific (the only folder a designer/dev should normally edit)
   - `custom/config/` — site config (`config.php`, `lang.php`, `permissions.php`)
-  - `custom/utility/frontend/` — `head.php`, `body-start.php`, `header.php`, `footer.php`, `body-end.php`, `set-up.php` (currently mix layout + logic — see "Refactor in progress" below)
-  - `custom/utility/backend/` — backend chrome equivalents
   - `custom/build/table/` — one PHP file per DB table; loaded by glob from the framework
   - `custom/build/page/`, `custom/build/row/` — additional page/row schemas
   - `custom/function/function.php` — project-level helpers (currently empty)
   - `custom/routes/` — custom Symfony routes
+  - `custom/view/components/` — project component overrides under `frontend/` and `backend/`
+  - `custom/view/pages/` — project pages rendered through `View::layout(...)`
 - `app/` — PSR-4 `App\\` classes (`Models/`, `Resources/`, services/support classes)
 - `assets/` — public web assets
   - `assets/0.0/css/set-up/` — `root.css` (design tokens) + `color.css` (color utility classes, **generated**, gitignored)
@@ -51,6 +51,8 @@ If `.env` values are missing, `forge start` fills `APP_URL`, `APP_KEY`, `DB_*`, 
 
 - New PHP classes go under `app/` with namespace `App\\` (PSR-4).
 - Project helpers go in `custom/function/function.php` (or new files alongside it).
+- Renderable layout overrides go in `custom/view/components/frontend/layout/` and `custom/view/components/backend/layout/`.
+- Prefer `\Wonder\View\View::component(...)` over manual `include` for components.
 - DB table schemas: **one file per table** under `custom/build/table/`. Files are loaded by glob — do not centralize them in a single megafile.
 - For backend forms / pages built on top of the framework, follow the framework conventions:
   - `Model::tableSchema()` = SQL structure
@@ -67,14 +69,17 @@ If `.env` values are missing, `forge start` fills `APP_URL`, `APP_KEY`, `DB_*`, 
 - The CSS/JS framework (utility classes `.f-end`, `.col-3`, `.mh-10`, `.tx-upper`, ...) comes from `wonder-image` lib — see [lib/MANIFEST.json](../lib/MANIFEST.json) (in the lib repo) for the registry.
 - Custom site styles: `assets/0.0/css/` (excluding `set-up/`), one file per concern.
 
-## Refactor in progress (state as of this AGENTS.md)
+## Component structure
 
-The following files mix layout + logic and are scheduled for splitting. Do not extend them — extract instead:
+Follow the framework component split:
 
-- [custom/utility/frontend/footer.php](custom/utility/frontend/footer.php) — contains site footer **+ inline contact form** + legal bar (controlled by undocumented `$FOOTER_CONTACT*` flags). Target split: `custom/view/components/layout/site-footer.php`, `custom/view/components/sections/contact-form.php`, `custom/view/components/layout/legal-bar.php`.
-- [custom/utility/frontend/body-start.php](custom/utility/frontend/body-start.php) — pure popup logic with inline SQL + escaped HTML. Target: a `PopupSchema` class or a pure renderer.
-- [custom/utility/frontend/header.php](custom/utility/frontend/header.php) — nav is hardcoded twice (desktop + mobile). Target: nav array in `custom/config/navigation.php`, single iteration.
-- Page entry points (`index.php`, `demo.php`, `contact/index.php`, `legal/*/index.php`) — duplicated boilerplate. Target: a `page([...])` factory under `custom/lib/page.php`.
+- `custom/view/components/frontend/layout/`
+- `custom/view/components/frontend/ui/`
+- `custom/view/components/frontend/sections/`
+- `custom/view/components/frontend/overlay/`
+- `custom/view/components/backend/layout/`
+
+Do not reintroduce `custom/utility/*`.
 
 Target structure (when refactor lands):
 
@@ -82,11 +87,14 @@ Target structure (when refactor lands):
 custom/
 ├── view/
 │   ├── components/
-│   │   ├── layout/      # site-header, site-footer, legal-bar
-│   │   ├── sections/    # hero, contact-form, cta
-│   │   ├── ui/          # card, button-group
-│   │   └── functional/  # popup, cookie-banner
-│   └── pages/         # one ~10-line file per page, via page() factory
+│   │   ├── frontend/
+│   │   │   ├── layout/
+│   │   │   ├── sections/
+│   │   │   ├── ui/
+│   │   │   └── overlay/
+│   │   └── backend/
+│   │       └── layout/
+│   └── pages/           # one ~10-line file per page, via View::layout()
 ├── features/          # contact-form (handler), popup (data)
 ├── lib/page.php       # page factory
 ├── config/            # site, navigation, pages, lang, permissions
@@ -124,4 +132,4 @@ php forge start
 - Forge commands run from this repo, not from the framework repo.
 - The `0.0/` versioning in `assets/` is intentional for cache-busting; do not rename without coordinating with the framework's path resolver.
 - Two `composer.json` exist (this one + framework's); make sure you're editing the right one.
-- Most legacy globals (`$ROOT`, `$ROOT_APP`, `$PATH`, `$SEO`, `$SOCIETY`, `$DB`, `$DEFAULT`) are made available by the framework's bootstrap (`vendor/wonder-image/app/wonder-image.php`) via `extract()`. They are not visible in static analysis. To know what's in scope on a given page, read `vendor/wonder-image/app/wonder-image.php` and `app/utility/frontend/set-up.php`.
+- Most legacy globals (`$ROOT`, `$ROOT_APP`, `$PATH`, `$SEO`, `$SOCIETY`, `$DB`, `$DEFAULT`) are made available by the framework's bootstrap (`vendor/wonder-image/app/wonder-image.php`) via `extract()`. They are not visible in static analysis. To know what's in scope on a given page, read `vendor/wonder-image/app/wonder-image.php` and the current frontend/backend layout components under `vendor/wonder-image/app/app/view/components/`.

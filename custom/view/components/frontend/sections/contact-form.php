@@ -2,20 +2,16 @@
     /**
      * Sezione form contatto.
      *
-     * Argomenti opzionali (in $args, se invocato via include con extract):
-     * - title    : string  override titolo (default: __t('components.forms.contact.title'))
-     * - subtitle : string  override sottotitolo
-     * - showMap  : bool    mostra l'iframe Google Maps a sinistra (default: true)
-     *
-     * Variabili in scope: $PAGE (per request_url).
-     *
-     * STATUS: 2a — additivo. Non ancora incluso da custom/utility/frontend/footer.php.
+     * Argomenti opzionali:
+     * - title
+     * - subtitle
+     * - showMap
      */
 
-    $args     = $args ?? [];
-    $title    = $args['title']    ?? __t('components.forms.contact.title');
-    $subtitle = $args['subtitle'] ?? __t('components.forms.contact.subtitle');
-    $showMap  = $args['showMap']  ?? true;
+    $title = $title ?? __t('components.forms.contact.title');
+    $subtitle = $subtitle ?? __t('components.forms.contact.subtitle');
+    $showMap = $showMap ?? true;
+    
 ?>
 <section id="contact-form">
     <div class="content mh-12 <?=!$showMap ? 'content-little' : ''?>">
@@ -59,3 +55,43 @@
         </div>
     </div>
 </section>
+
+<script>
+    function contactFormSubmitResponse(data) {
+        var message = '<?=addslashes(__t('notifications.649.text'))?>';
+
+        if (!data || !data.success) {
+            message = contactFormErrorMessage(data);
+        }
+
+        loadingResponse({
+            success: !!(data && data.success),
+            response: message
+        });
+    }
+
+    function contactFormErrorMessage(data) {
+        if (!data || data.response == null) {
+            return '<?=addslashes(__t('components.buttons.retry'))?>';
+        }
+
+        if (typeof data.response === 'string') {
+            return data.response;
+        }
+
+        if (data.response.errors && typeof data.response.errors === 'object') {
+            var errors = Object.values(data.response.errors).filter(Boolean);
+
+            if (errors.length > 0) {
+                return errors[0];
+            }
+        }
+
+        if (typeof data.response.message === 'string' && data.response.message !== '') {
+            return data.response.message;
+        }
+
+        return '<?=addslashes(__t('components.buttons.retry'))?>';
+    }
+</script>
+

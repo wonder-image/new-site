@@ -1,0 +1,1 @@
+<?php include $ROOT_APP.'/view/components/frontend/layout/body-end.php'; ?>
