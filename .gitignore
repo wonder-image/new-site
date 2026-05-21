@@ -44,7 +44,3 @@
 !/assets/upload/**/README.md
 /shared/sitemap/*
 !/shared/sitemap/.gitkeep
-
-# AI runtime context (cache, embeddings, generated state)
-/ai/context/*
-!/ai/context/.gitkeep
