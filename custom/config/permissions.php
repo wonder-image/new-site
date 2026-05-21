@@ -1,6 +1,3 @@
 <?php
 
-    // Authority
-    $CUSTOM_PERMITS = [];
-
-?>
+    use Wonder\App\Permission\Permissions;

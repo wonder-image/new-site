@@ -3204,12 +3204,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/wonder-image/app.git",
-                "reference": "f81e6415197b9775b492d3a2d167eb0f34bcc7ba"
+                "reference": "aabd410fbf41c6a024fdfa2a8ffe684ec072d685"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/wonder-image/app/zipball/f81e6415197b9775b492d3a2d167eb0f34bcc7ba",
-                "reference": "f81e6415197b9775b492d3a2d167eb0f34bcc7ba",
+                "url": "https://api.github.com/repos/wonder-image/app/zipball/aabd410fbf41c6a024fdfa2a8ffe684ec072d685",
+                "reference": "aabd410fbf41c6a024fdfa2a8ffe684ec072d685",
                 "shasum": ""
             },
             "require": {
@@ -3258,7 +3258,7 @@
                 "issues": "https://github.com/wonder-image/app/issues",
                 "source": "https://github.com/wonder-image/app/tree/main"
             },
-            "time": "2026-05-21T13:18:31+00:00"
+            "time": "2026-05-21T15:10:23+00:00"
         }
     ],
     "packages-dev": [],
@@ -3272,9 +3272,9 @@
     "platform": {
         "php": "^8.2"
     },
-    "platform-dev": [],
+    "platform-dev": {},
     "platform-overrides": {
         "php": "8.2.30"
     },
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.9.0"
 }

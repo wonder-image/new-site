@@ -35,8 +35,6 @@ final class Form extends Model
                 'privacy',
                 'file',
             ]),
-            // request/request_url possono essere lunghi (pagina sorgente con
-            // querystring, messaggio libero), serve un VARCHAR maggiorato.
             Column::key('request')->varchar()->length(10000),
             Column::key('request_url')->varchar()->length(10000),
         ];

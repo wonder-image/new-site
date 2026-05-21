@@ -44,6 +44,8 @@
     </div>
 </header>
 
+<?=\Wonder\View\Component::make('frontend.overlay.annuncement')?>
+
 <section id="nav-mobile" class="pc-none tablet-none">
     <div class="bg" onclick="menuMobile()"></div>
     <div class="content bg-white">
