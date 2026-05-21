@@ -1,0 +1,31 @@
+# Configurazione AI di progetto
+#
+# Defaults globali per tutti gli agenti scoperti dal framework, dai moduli
+# composer e dal consumer. Ogni agente può overridare questi valori nel suo
+# `agent.yml`, e il consumer può applicare tweak run-time in `overrides.yml`.
+
+defaults:
+  # Modello di default se l'agent.yml non lo specifica
+  model: claude-sonnet-4
+
+  # Determinismo: temperature 0 = stesso input → stesso output
+  # (utile per estrazione dati, SEO, classificazione)
+  temperature: 0
+
+  # Token limit di sicurezza
+  max_tokens: 1024
+
+  # Timeout chiamata LLM in secondi
+  timeout_seconds: 60
+
+  # Retry su errori 5xx / rate limit
+  max_retries: 2
+
+  # Provider di default. Override per-agente possibile via agent.yml.
+  provider: anthropic
+
+providers:
+  anthropic:
+    api_key_env: ANTHROPIC_API_KEY
+  openai:
+    api_key_env: OPENAI_API_KEY
