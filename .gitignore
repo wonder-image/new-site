@@ -8,6 +8,9 @@
 # Codex Skill Builder (generated tool output, not source)
 .codex-skill-build/
 
+# Skills installed via `npx skills add ...` (auto-updated by the tool)
+.agents/
+
 # Dependencies
 /vendor/
 /node_modules/

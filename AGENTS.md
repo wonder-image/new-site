@@ -161,6 +161,29 @@ When adding an agent:
 
 Full docs: `vendor/wonder-image/app/docs/app/ai/`.
 
+## AI dev-tool skills
+
+Different from `ai/agents/` above. Dev-tool skills are invoked at
+*development time* by AI assistants (Claude Code, Cursor, Codex)
+while you chat with them — for example to audit UI, suggest copy,
+or refactor components. Application agents run at runtime.
+
+Installed under `.agents/skills/<slug>/` (universal folder, symlinked
+into `.claude/skills/` etc.). Both are gitignored: skills are managed
+by their CLI and auto-updated.
+
+Install / manage:
+
+```bash
+npx skills add pbakaus/impeccable     # UI design audit/craft skill
+npx skills list
+npx skills update                     # update all
+npx skills remove <slug>
+```
+
+Each dev runs `npx skills add` once on their own laptop. The skill is
+not versioned in this repo (intentional).
+
 ## Validation before commit
 
 ```bash
