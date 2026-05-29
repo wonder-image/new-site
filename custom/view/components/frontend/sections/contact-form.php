@@ -1,21 +1,28 @@
 <?php
     /**
+     * 
      * Sezione form contatto.
      *
      * Argomenti opzionali:
      * - title
      * - subtitle
      * - showMap
+     *
      */
 
-    $title = $title ?? __t('components.forms.contact.title');
+    use App\Resources\Request\RequestResource;
+    use Wonder\Elements\Form\Components\Submit;
+
+    $title    = $title    ?? __t('components.forms.contact.title');
     $subtitle = $subtitle ?? __t('components.forms.contact.subtitle');
-    $showMap = $showMap ?? true;
-    
+    $showMap  = $showMap  ?? true;
+
+    $requestUrl = isset($PAGE) && is_object($PAGE) ? (string) ($PAGE->url ?? '') : '';
+
 ?>
 <section id="contact-form">
-    <div class="content mh-12 <?=!$showMap ? 'content-little' : ''?>">
-        <div class="d-grid <?=!$showMap ? 'col-2' : 'col-5'?> col-p-1 gap-5 w-100">
+    <div class="content mh-12 <?= !$showMap ? 'content-little' : '' ?>">
+        <div class="d-grid <?= !$showMap ? 'col-2' : 'col-5' ?> col-p-1 gap-5 w-100">
 
             <?php if ($showMap) : ?>
                 <div class="col-3 col-p-1 b-r-5 f-p-3-2 o-hidden">
@@ -24,41 +31,55 @@
             <?php endif; ?>
 
             <div class="col-2 col-p-1">
-                <form class="w-100 d-grid col-2 gap-5 gap-p-3 r-gap-p-5">
-                    <input type="hidden" name="request_url" value="<?=$PAGE->url ?? ''?>">
+
+                <div class="a-c mb-4">
+                    <div class="subtitle"><?= $title ?></div>
+                    <div class="text mt-3"><?= $subtitle ?></div>
+                </div>
+
+                <form id="contact-form-el" action="" method="post" enctype="multipart/form-data" class="wi-form d-grid col-2 gap-5 w-100">
+
+                    <?= RequestResource::getInput('request_url') ?>
+
+                    <?= RequestResource::getInput('name') ?>
+                    <?= RequestResource::getInput('surname') ?>
+
                     <div class="col-2">
-                        <div class="subtitle a-c"><?=$title?></div>
-                        <div class="text mt-3 a-c"><?=$subtitle?></div>
-                    </div>
-                    <?=text(__t('components.forms.fields.name.label'), 'name', '', 'required')?>
-                    <?=text(__t('components.forms.fields.surname.label'), 'surname', '', 'required')?>
-                    <div class="col-2">
-                        <?=phone(__t('components.forms.fields.phone.label'), 'phone', '', 'required')?>
-                    </div>
-                    <div class="col-2">
-                        <?=text(__t('components.forms.fields.email.label'), 'email', '', 'required')?>
-                    </div>
-                    <div class="col-2">
-                        <?=textarea(__t('components.forms.fields.request.label'), 'request', '', 'required')?>
-                    </div>
-                    <div class="col-2">
-                        <?=checkbox('', 'privacy', ["true" => ["label" => __t('components.forms.fields.privacy.label'), "attribute" => "required"]], 'checkbox', '');?>
+                        <?= RequestResource::getInput('phone') ?>
                     </div>
                     <div class="col-2">
-                        <?=inputRecaptcha()?>
+                        <?= RequestResource::getInput('email') ?>
                     </div>
                     <div class="col-2">
-                        <?=submit(__t('components.buttons.send'), 'send', 'btn-primary f-end', "formSubmit(this.form, '/resource/forms-contact/', contactFormSubmitResponse)")?>
+                        <?= RequestResource::getInput('request') ?>
                     </div>
+                    <div class="col-2">
+                        <?=RequestResource::getInput('accept_privacy_policy') ?>
+                    </div>
+                    <div class="col-2">
+                        <?= RequestResource::getInput('recaptcha') ?>
+                    </div>
+                    <div class="col-2">
+                        <?=  (new Submit('send'))
+                            ->label(__t('components.buttons.send'))
+                            ->class('btn btn-primary f-end')
+                            ->onclick("formSubmit(this.form, '".__e('api.resource.requests.store')."', contactFormSubmitResponse)")
+                            ->render(); 
+                        ?>
+                    </div>
+
                 </form>
+
             </div>
         </div>
     </div>
 </section>
 
 <script>
+
     function contactFormSubmitResponse(data) {
-        var message = '<?=addslashes(__t('notifications.649.text'))?>';
+
+        var message = '<?= addslashes(__t('notifications.649.text')) ?>';
 
         if (!data || !data.success) {
             message = contactFormErrorMessage(data);
@@ -68,11 +89,13 @@
             success: !!(data && data.success),
             response: message
         });
+
     }
 
     function contactFormErrorMessage(data) {
+
         if (!data || data.response == null) {
-            return '<?=addslashes(__t('components.buttons.retry'))?>';
+            return '<?= addslashes(__t('components.buttons.retry')) ?>';
         }
 
         if (typeof data.response === 'string') {
@@ -91,7 +114,8 @@
             return data.response.message;
         }
 
-        return '<?=addslashes(__t('components.buttons.retry'))?>';
-    }
-</script>
+        return '<?= addslashes(__t('components.buttons.retry')) ?>';
 
+    }
+
+</script>

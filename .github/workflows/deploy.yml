@@ -134,7 +134,7 @@ jobs:
         run: npm ci
 
       - name: 🧱 Build static files (handler/index.php, .htaccess)
-        run: php forge build
+        run: php forge build ${{ vars.FORCE_WWW == 'true' && '--force-www' || '' }}
 
       - name: 📂 Sincronizza file FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4

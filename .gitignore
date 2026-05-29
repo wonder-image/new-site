@@ -10,6 +10,7 @@
 
 # Skills installed via `npx skills add ...` (auto-updated by the tool)
 .agents/
+skills-lock.json
 
 # Dependencies
 /vendor/
@@ -30,12 +31,16 @@
 *.log
 
 # Generated/local site configuration
+/.htaccess
 /robots.txt
 /handler/index.php
 /assets/0.0/css/set-up/color.css
 /assets/0.0/css/set-up/root.css
 
 # Runtime/generated content
+/storage/**
+!/storage/**/
+!/storage/**/*.gitkeep
 /assets/temp/*
 !/assets/temp/.gitkeep
 /assets/upload/**
