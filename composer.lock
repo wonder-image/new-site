@@ -3269,6 +3269,7 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
+        "wonde-image/app": 20,
         "wonder-image/app": 20
     },
     "prefer-stable": true,
