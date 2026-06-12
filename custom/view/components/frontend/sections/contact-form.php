@@ -10,7 +10,7 @@
      *
      */
 
-    use App\Resources\Request\RequestResource;
+    use App\Resources\Site\RequestResource;
     use Wonder\Elements\Form\Components\Submit;
 
     $title    = $title    ?? __t('components.forms.contact.title');

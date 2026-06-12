@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\Request;
+namespace App\Models\Site;
 
 use Wonder\App\Model;
 use Wonder\Data\UploadSchema as Field;
@@ -54,4 +54,12 @@ final class Request extends Model
             Field::key('accept_privacy_policy')->text(),
         ];
     }
+
+    public static function decorate(array $row): array
+    {
+        $row['pretty_accept_privacy_policy'] = $row['accept_privacy_policy'] === 'true' ? 'Accettato' : 'Non accettato';
+
+        return $row;
+    }
+    
 }

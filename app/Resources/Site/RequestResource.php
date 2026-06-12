@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Resources\Request;
+namespace App\Resources\Site;
 
 use RuntimeException;
 use Wonder\App\LegacyGlobals;
@@ -23,7 +23,7 @@ use Wonder\Plugin\Google\Security\reCAPTCHA;
  */
 final class RequestResource extends Resource
 {
-    public static string $model = \App\Models\Request\Request::class;
+    public static string $model = \App\Models\Site\Request::class;
 
     public static array|string $condition = [
         'deleted' => 'false'
@@ -70,7 +70,7 @@ final class RequestResource extends Resource
             'files' => 'Files',
             'privacy_policy' => 'Privacy Policy',
             'accept_privacy_policy' => 'Accetta la Privacy Policy',
-            'url_consent_privacy_policy' => 'Link consenso:',
+            'url_consent_privacy_policy' => 'Link consenso',
             'creation' => 'Ricevuta il',
         ];
     }
@@ -117,9 +117,9 @@ final class RequestResource extends Resource
     {
         return [
             TableColumn::key('name')->text()->columns(['name', 'surname'])->link('view'),
-            TableColumn::key('email')->text(),
-            TableColumn::key('phone')->text(),
-            TableColumn::key('creation')->datetime()->size('medium'),
+            TableColumn::key('email')->text()->hiddenDevice('mobile'),
+            TableColumn::key('phone')->text()->hiddenDevice('mobile'),
+            TableColumn::key('creation')->datetime()->hiddenDevice('mobile'),
             TableColumn::key('actions')->button()->actions(['view'])
         ];
     }
@@ -131,7 +131,15 @@ final class RequestResource extends Resource
             ->results()
             ->hideButtonAdd()
             ->filters()
-            ->searchFields(['name', 'surname', 'email', 'phone', 'request']);
+            ->searchFields(['name', 'surname', 'email', 'phone', 'request'])
+            ->download(['xlsx', 'csv'])
+            ->downloadColumns([
+                'code',
+                ['label' => 'Nome completo', 'value' => fn($r) => trim(($r['name'] ?? '').' '.($r['surname'] ?? ''))],
+                'email',
+                'phone',
+                'creation'
+            ]);
     }
 
     public static function pageSchema(): PageSchema
@@ -171,7 +179,7 @@ final class RequestResource extends Resource
     {
         return NavigationSchema::for(static::class)
             ->title('Richieste')
-            ->order(10)
+            ->sectionOrder(30)
             ->authority(['admin', 'administrator']);
     }
 

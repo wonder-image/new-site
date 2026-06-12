@@ -1,20 +1,21 @@
 <?php
 
-use App\Models\Request\Request;
-use App\Resources\Request\RequestResource;
+use App\Models\Site\Request;
+use App\Resources\Site\RequestResource;
 use Wonder\App\Models\Consent\ConsentEvent;
-use Wonder\Elements\Components\{ Container, Card, SectionTitle, Text };
+use Wonder\Elements\Components\{ Container, Card, SectionTitle, RichText, Link };
 
 $REQUEST = Request::safeFindById($ITEM['id'] ?? 0);
 
 $fullName = e($REQUEST['name'].' '.$REQUEST['surname']);
 
-$event = consentsForRecord('requests', $REQUEST['id']);
+$event = consentsForRecord('requests', $REQUEST['id'])[0] ?? null;
 $CONSENT = ConsentEvent::safeFindById($event['id'] ?? 0);
 
-$TITLE = $fullName; # Non viene passato
-
-\Wonder\View\View::layout('backend.show');
+\Wonder\View\View::layout('backend.show', [
+    'TITLE' => $fullName,
+    'SUBTITLE' => 'Richiesta '.$REQUEST['code'].' del '.prettyDate($REQUEST['creation'], true)
+]);
 
 echo (new Container)->components([
     
@@ -24,7 +25,7 @@ echo (new Container)->components([
 
         (new Container)->components([
 
-            (new Text(
+            (new RichText(
                 RequestResource::getLabel('full_name').": <b>$fullName</b><br>".
                       RequestResource::getLabel('email').": <b>".$REQUEST['email']."</b><br>".
                       RequestResource::getLabel('phone').": <b>".$REQUEST['phone']."</b>"
@@ -34,11 +35,16 @@ echo (new Container)->components([
 
         (new Container)->components([
 
-            (new Text("Messaggio:<br>".$REQUEST['request']))
+            (new RichText("Messaggio:<br>".$REQUEST['request']))
 
         ])->columnSpan(1),
 
-        (new Text("Link: <a href=\"".$REQUEST['request_url']."\"  target=\"_blank\" rel=\"noopener noreferrer\"'>".$REQUEST['request_url']."</a>"))->columnSpan(2)
+        (new RichText(
+            RequestResource::getLabel('request_url').": ".
+                    (new Link($REQUEST['request_url'] ?? '#'))
+                            ->label($REQUEST['request_url'] ?? 'N/D')
+                            ->blank())
+            )->columnSpan(2)
 
     ])->columnSpan(2)
     ->columns(2),
@@ -47,33 +53,16 @@ echo (new Container)->components([
 
         (new SectionTitle)->text('Consenso')->columnSpan(2),
         
-        (new Text(
-            RequestResource::getLabel('privacy_policy').": <b>".$REQUEST['accept_privacy_policy']."</b><br>".
-                  RequestResource::getLabel('url_consent_privacy_policy').": <b>".$REQUEST['accept_privacy_policy']."</b>"
+        (new RichText(
+              RequestResource::getLabel('privacy_policy').": <b>".$REQUEST['pretty_accept_privacy_policy']."</b><br>".
+                    RequestResource::getLabel('url_consent_privacy_policy').": ".
+                    (new Link($CONSENT['backend_url'].'?redirect='.$PAGE->uriBase64 ?? '#'))
+                            ->label($CONSENT['backend_url'] ?? 'N/D')
+                            ->blank()
             ))
             
     ])->columnSpan(1),
 
 ])->columns(3);
 
-?>
-
-
-<div class="row g-3">
-    <wi-card class="col-8">
-        <h6 class="col-12">Richiesta</h6>
-        <div class="col-12">
-            Nome: <b><?=e($fullName)?></b>
-        </div>
-    </wi-card>
-
-    <wi-card class="col-4">
-        <h6 class="col-12">Consenso privacy</h6>
-        <div class="col-12">
-            <?= wiCard($events ?? '') ?>
-        </div>
-    </wi-card>
-
-</div>
-
-<?php \Wonder\View\View::end(); ?>
+\Wonder\View\View::end(); 
