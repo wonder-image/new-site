@@ -156,7 +156,7 @@ final class RequestResource extends Resource
         $root = (string) LegacyGlobals::get('ROOT', '');
 
         return $root !== ''
-            ? $root.'/custom/view/pages/backend/show.php'
+            ? $root.'/custom/view/pages/backend/request/show.php'
             : null;
 
     }
