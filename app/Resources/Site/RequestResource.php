@@ -96,7 +96,6 @@ final class RequestResource extends Resource
                 ->label(__t('components.forms.fields.phone.label')),
 
             FormField::key('email')->email()->required()
-                ->attribute('autocomplete="email"')
                 ->label(__t('components.forms.fields.email.label')),
 
             FormField::key('request')->textarea()->required()
@@ -190,11 +189,10 @@ final class RequestResource extends Resource
         ?array $oldValues = null
     ): array {
 
-        if ($context === 'api' && $action === 'store') {
-            static::verifyContactCaptcha();
-        }
+        if ($context === 'api' && $action === 'store') { static::verifyRecaptcha(); }
 
         return $values;
+        
     }
 
     public static function afterStore(object $result, array $values = []): void
@@ -247,83 +245,6 @@ final class RequestResource extends Resource
         );
     }
 
-    /**
-     * Verifica reCAPTCHA Enterprise per la submission del form contatto.
-     *
-     * Usa direttamente `Wonder\Plugin\Google\Security\reCAPTCHA::verify()`
-     * invece dell'helper procedurale `verifyRecaptcha()` (che muta
-     * `$GLOBALS['ALERT']`, pattern legacy).
-     *
-     * Token e action sono trasporto HTTP, non dato persistito: vivono
-     * fuori dall'`apiSchema()` whitelist e li leggiamo da `$_POST`.
-     * Sono popolati dalla view tramite
-     * `Wonder\Plugin\Custom\Input\reCAPTCHA` (che emette il widget
-     * `.g-recaptcha` + due hidden `g-recaptcha-token` /
-     * `g-recaptcha-action`, riempiti runtime dal callback in
-     * `lib/src/build/frontend/js/form/recaptcha.js`).
-     *
-     * Lancia `RuntimeException` con codice i18n 617 (captcha non
-     * valido) cosi il middleware API lo restituisce al frontend, che
-     * lo mostra via `loadingResponse`.
-     */
-    private static function verifyContactCaptcha(): void
-    {
-        $token  = trim((string) ($_POST['g-recaptcha-token']  ?? ''));
-        $action = trim((string) ($_POST['g-recaptcha-action'] ?? ''));
-
-        if ($token === '' || $action === '') {
-            static::logRecaptchaFailure('missing_token_or_action', [
-                'action' => $action,
-                'token_length' => strlen($token),
-            ]);
-            throw new RuntimeException(__t('notifications.617.text'), 617);
-        }
-
-        try {
-            $result = (new reCAPTCHA())->verify($token, $action);
-        } catch (\Throwable $exception) {
-            static::logRecaptchaFailure('enterprise_verify_exception', [
-                'action' => $action,
-                'token_length' => strlen($token),
-            ], $exception);
-
-            throw new RuntimeException(__t('notifications.617.text'), 617);
-        }
-
-        if (empty($result->valid)) {
-            static::logRecaptchaFailure('enterprise_verify_invalid', [
-                'action' => $action,
-                'token_length' => strlen($token),
-                'google_result' => (array) ($result->result ?? []),
-            ]);
-            throw new RuntimeException(__t('notifications.617.text'), 617);
-        }
-    }
-
-    private static function logRecaptchaFailure(string $reason, array $context = [], ?\Throwable $exception = null): void
-    {
-        $credentials = GoogleCredentials::get();
-
-        $baseContext = [
-            'reason' => $reason,
-            'request_uri' => (string) ($_SERVER['REQUEST_URI'] ?? ''),
-            'remote_addr' => (string) ($_SERVER['REMOTE_ADDR'] ?? ''),
-            'has_gcp_project_id' => trim((string) ($credentials->gcp_project_id ?? '')) !== '',
-            'has_gcp_api_key' => trim((string) ($credentials->gcp_api_key ?? '')) !== '',
-            'has_site_key' => trim((string) ($credentials->recaptcha_site_key ?? '')) !== '',
-        ];
-
-        \Wonder\App\Logger::log(
-            $exception ?? new RuntimeException('reCAPTCHA Enterprise verification failed'),
-            'recaptcha',
-            'contact_form_verify',
-            'ERROR',
-            'error/recaptcha',
-            array_merge($baseContext, $context),
-            false
-        );
-    }
-
     private static function attachmentPaths(mixed $storedFiles, string $uploadRoot): array
     {
         if (!is_string($storedFiles) || trim($storedFiles) === '') {
@@ -341,4 +262,5 @@ final class RequestResource extends Resource
             array_filter($files, 'is_string')
         ));
     }
+    
 }
