@@ -54,9 +54,11 @@ Options +FollowSymLinks -MultiViews
     Header set Cache-Control "public, max-age=86400, must-revalidate"
   </FilesMatch>
 
-  # JS e CSS: cache 7 giorni, validabile
+  # JS e CSS: cache lunga sicura, gli URL emessi dal framework sono
+  # versionati con ?v=filemtime (Wonder\App\Support\Asset) e invalidano
+  # la cache da soli quando il file cambia
   <FilesMatch "\.(js|css)$">
-    Header set Cache-Control "public, max-age=604800, must-revalidate"
+    Header set Cache-Control "public, max-age=31536000, immutable"
   </FilesMatch>
 
   # HTML: no cache
@@ -77,8 +79,8 @@ FileETag MTime Size
   ExpiresByType image/png "access plus 1 day"
   ExpiresByType image/gif "access plus 1 day"
   ExpiresByType image/svg+xml "access plus 1 day"
-  ExpiresByType text/css "access plus 1 week"
-  ExpiresByType application/javascript "access plus 1 week"
+  ExpiresByType text/css "access plus 1 year"
+  ExpiresByType application/javascript "access plus 1 year"
   ExpiresByType text/html "access plus 0 seconds"
 </IfModule>
 
