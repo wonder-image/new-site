@@ -34,6 +34,7 @@ skills-lock.json
 /.htaccess
 /robots.txt
 /handler/index.php
+/bin/scheduler.php
 /assets/0.0/css/set-up/color.css
 /assets/0.0/css/set-up/root.css
 

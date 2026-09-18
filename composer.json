@@ -1,5 +1,5 @@
 {
-    "name": "wonder-image/new",
+    "name": "wonder-image/new-site",
     "type": "project",
     "description": "The skeleton application for the Wonder Image framework.",
     "keywords": [
@@ -9,7 +9,8 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
-        "wonder-image/app": "dev-main"
+        "wonder-image/app": "dev-main",
+        "dragonmantank/cron-expression": "^3.4"
     },
     "minimum-stability": "dev",
     "prefer-stable": true,
