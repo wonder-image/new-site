@@ -9,8 +9,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
-        "wonder-image/app": "dev-main",
-        "dragonmantank/cron-expression": "^3.4"
+        "wonder-image/app": "dev-main"
     },
     "minimum-stability": "dev",
     "prefer-stable": true,
