@@ -178,7 +178,7 @@ final class RequestResource extends Resource
     {
         return NavigationSchema::for(static::class)
             ->title('Richieste')
-            ->sectionOrder(30)
+            ->sectionOrder(490)
             ->authority(['admin', 'administrator']);
     }
 
