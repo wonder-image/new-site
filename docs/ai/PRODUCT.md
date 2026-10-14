@@ -25,10 +25,11 @@
 
 ## Asset paths
 
-- Logo SVG: `assets/{ASSETS_VERSION}/icons/logo.svg`
-- Logo PNG (fallback): `assets/{ASSETS_VERSION}/icons/logo.png`
-- Favicon: `assets/{ASSETS_VERSION}/icons/favicon.png`
-- OG image default: `assets/{ASSETS_VERSION}/images/og-default.jpg`
+> Logo e favicon si caricano dal backend e vivono in `assets/upload/logos/`
+> (`Logo.png`, `Logo-White.png`, `Logo-Black.png`, `Logo-Icon.png`, `App-Icon.png`)
+> e `assets/upload/favicon.ico` (vedi `App\Path`). Elencare qui solo asset che
+> esistono davvero (es. immagine OG di default, illustrazioni), con il percorso
+> relativo alla root del sito.
 
 ## Constraints
 
