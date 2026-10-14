@@ -37,6 +37,10 @@ skills-lock.json
 /bin/scheduler.php
 /assets/0.0/css/set-up/color.css
 /assets/0.0/css/set-up/root.css
+/docs/ai/DESIGN.md
+/docs/ai/reports/*
+!/docs/ai/reports/.gitkeep
+/.taste-skill/
 
 # Runtime/generated content
 /storage/**
