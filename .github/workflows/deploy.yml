@@ -158,6 +158,7 @@ jobs:
               **/node_modules/**
               forge
               *.md
+              docs/**
 
       - name: 🗄️ Update App
         shell: bash
