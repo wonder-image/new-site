@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - main
+  # Lancio manuale da GitHub (Actions > 🚀 Deploy > Run workflow)
+  # o con `gh workflow run deploy.yml`.
+  workflow_dispatch:
 
 jobs:
   web-deploy:
