@@ -9,23 +9,16 @@
             "reply": "marinoni@wonderimage.it"
         }
     ],
-    "society": [
+    "society_locations": [
         {
-            "name": null,
-            "legal_name": null,
-            "email": null,
-            "pec": null,
-            "tel": null,
-            "cel": null,
-            "pi": null,
-            "cf": null,
-            "sdi": null,
-            "rea": null,
-            "share_capital": null
-        }
-    ],
-    "society_address": [
-        {
+            "id": "1",
+            "slug": "sede-principale",
+            "label": "Sede principale",
+            "is_default": "true",
+            "visible": "true",
+            "position": "1",
+            "business_status": "operational",
+            "opening_date": null,
             "country": "AS",
             "province": "AG",
             "city": null,
@@ -34,11 +27,21 @@
             "number": null,
             "more": null,
             "gmaps": null,
-            "timetable": "{\"Mon\":[{\"from\":\"08:00\",\"to\":\"17:00\"}],\"Tue\":[{\"from\":\"08:00\",\"to\":\"17:40\"}]}"
-        }
-    ],
-    "society_legal_address": [
-        {
+            "lat": null,
+            "lng": null,
+            "google_place_id": null,
+            "google_synced_at": null,
+            "email": null,
+            "pec": null,
+            "tel": null,
+            "cel": null,
+            "name": null,
+            "legal_name": null,
+            "pi": null,
+            "cf": null,
+            "sdi": null,
+            "rea": null,
+            "share_capital": null,
             "legal_country": "AS",
             "legal_province": "AG",
             "legal_city": null,
@@ -46,21 +49,72 @@
             "legal_street": null,
             "legal_number": null,
             "legal_more": null,
-            "legal_gmaps": null
-        }
-    ],
-    "society_social": [
-        {
+            "legal_gmaps": null,
+            "legal_place_id": null,
+            "legal_lat": null,
+            "legal_lng": null,
             "site": null,
             "instagram": null,
             "facebook": null,
             "tiktok": null,
             "linkedin": null,
             "whatsapp": null,
-            "youtube": null
+            "youtube": null,
+            "deleted": "false"
+        },
+        {
+            "id": "8",
+            "slug": "mc-nembro",
+            "label": "MC Nembro",
+            "is_default": "false",
+            "visible": "false",
+            "position": "2",
+            "business_status": "operational",
+            "opening_date": null,
+            "country": "IT",
+            "province": "AG",
+            "city": "Nembro",
+            "cap": null,
+            "street": null,
+            "number": null,
+            "more": null,
+            "gmaps": null,
+            "lat": null,
+            "lng": null,
+            "google_place_id": null,
+            "google_synced_at": null,
+            "email": null,
+            "pec": null,
+            "tel": "035 000000",
+            "cel": null,
+            "name": null,
+            "legal_name": null,
+            "pi": null,
+            "cf": null,
+            "sdi": null,
+            "rea": null,
+            "share_capital": null,
+            "legal_country": "IT",
+            "legal_province": "AG",
+            "legal_city": null,
+            "legal_cap": null,
+            "legal_street": null,
+            "legal_number": null,
+            "legal_more": null,
+            "legal_gmaps": null,
+            "legal_place_id": null,
+            "legal_lat": null,
+            "legal_lng": null,
+            "site": null,
+            "instagram": null,
+            "facebook": null,
+            "tiktok": null,
+            "linkedin": null,
+            "whatsapp": null,
+            "youtube": null,
+            "deleted": "true"
         }
     ],
-    "society_timetable": [],
     "css_alert": [
         {
             "tx": "var(--dark-color)",
@@ -70,6 +124,15 @@
             "border_color": "#DEDEDE",
             "border_width": "1",
             "border_radius": "5"
+        }
+    ],
+    "css_auth": [
+        {
+            "bg_color": "#ffffff",
+            "tx_color": "#000000",
+            "form_bg_color": "#ffffff",
+            "form_tx_color": "#000000",
+            "form_border_color": "#DEDEDE"
         }
     ],
     "css_color": [
@@ -188,16 +251,85 @@
     ],
     "css_font": [
         {
+            "id": "1",
             "name": "Roboto",
+            "slug": "roboto",
             "link": "https:\/\/fonts.googleapis.com\/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap",
             "font_family": "\"Roboto\", sans-serif",
-            "visible": "true"
+            "visible": "true",
+            "deleted": "false"
         },
         {
+            "id": "2",
             "name": "Montserrat",
+            "slug": "montserrat",
             "link": "https:\/\/fonts.googleapis.com\/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap",
             "font_family": "\\'Montserrat\\', sans-serif",
-            "visible": "true"
+            "visible": "true",
+            "deleted": "false"
+        },
+        {
+            "id": "3",
+            "name": "Inter",
+            "slug": "inter",
+            "link": "\/vendor\/wonder-image\/app\/resources\/assets\/font\/web\/fonts.css",
+            "font_family": "\"Inter\", sans-serif",
+            "visible": "true",
+            "deleted": "false"
+        },
+        {
+            "id": "4",
+            "name": "Open Sans",
+            "slug": "open-sans",
+            "link": "\/vendor\/wonder-image\/app\/resources\/assets\/font\/web\/fonts.css",
+            "font_family": "\"Open Sans\", sans-serif",
+            "visible": "true",
+            "deleted": "false"
+        },
+        {
+            "id": "5",
+            "name": "Lato",
+            "slug": "lato",
+            "link": "\/vendor\/wonder-image\/app\/resources\/assets\/font\/web\/fonts.css",
+            "font_family": "\"Lato\", sans-serif",
+            "visible": "true",
+            "deleted": "false"
+        },
+        {
+            "id": "6",
+            "name": "Poppins",
+            "slug": "poppins",
+            "link": "\/vendor\/wonder-image\/app\/resources\/assets\/font\/web\/fonts.css",
+            "font_family": "\"Poppins\", sans-serif",
+            "visible": "true",
+            "deleted": "false"
+        },
+        {
+            "id": "7",
+            "name": "DM Sans",
+            "slug": "dm-sans",
+            "link": "\/vendor\/wonder-image\/app\/resources\/assets\/font\/web\/fonts.css",
+            "font_family": "\"DM Sans\", sans-serif",
+            "visible": "true",
+            "deleted": "false"
+        },
+        {
+            "id": "8",
+            "name": "Nunito",
+            "slug": "nunito",
+            "link": "\/vendor\/wonder-image\/app\/resources\/assets\/font\/web\/fonts.css",
+            "font_family": "\"Nunito\", sans-serif",
+            "visible": "true",
+            "deleted": "false"
+        },
+        {
+            "id": "9",
+            "name": "Work Sans",
+            "slug": "work-sans",
+            "link": "\/vendor\/wonder-image\/app\/resources\/assets\/font\/web\/fonts.css",
+            "font_family": "\"Work Sans\", sans-serif",
+            "visible": "true",
+            "deleted": "false"
         }
     ],
     "css_input": [

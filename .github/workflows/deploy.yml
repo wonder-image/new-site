@@ -15,9 +15,6 @@ jobs:
     env:
       BWS_ACCESS_TOKEN: ${{ secrets.BWS_ACCESS_TOKEN }}
       BWS_PROJECT_ID: ${{ secrets.BWS_PROJECT_ID }}
-      # Bearer per /api/app/update/. Sincronizzato da `forge provision`
-      # come secret della repo (i nomi GITHUB_* non sono ammessi da
-      # GitHub, quindi il vecchio GITHUB_API_TOKEN è rinominato qui).
       APP_DEPLOY_TOKEN: ${{ secrets.APP_DEPLOY_TOKEN }}
     steps:
     
@@ -27,8 +24,6 @@ jobs:
       - name: 📦 Setup Node
         uses: actions/setup-node@v7
         with:
-          # Single source of truth: .nvmrc nel repo. Stessa versione
-          # garantita su locale (nvm/fnm/Volta) e CI.
           node-version-file: '.nvmrc'
 
       - name: 📦 Setup PHP
@@ -162,6 +157,10 @@ jobs:
               forge
               *.md
               docs/**
+              .gitignore
+              .npmrc
+              .nvmrc
+              .env.example
 
       - name: 🗄️ Update App
         shell: bash
