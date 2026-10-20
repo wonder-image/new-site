@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 jobs:
   web-deploy:
@@ -12,20 +13,15 @@ jobs:
     env:
       BWS_ACCESS_TOKEN: ${{ secrets.BWS_ACCESS_TOKEN }}
       BWS_PROJECT_ID: ${{ secrets.BWS_PROJECT_ID }}
-      # Bearer per /api/app/update/. Sincronizzato da `forge provision`
-      # come secret della repo (i nomi GITHUB_* non sono ammessi da
-      # GitHub, quindi il vecchio GITHUB_API_TOKEN è rinominato qui).
       APP_DEPLOY_TOKEN: ${{ secrets.APP_DEPLOY_TOKEN }}
     steps:
     
       - name: 🚚 Get latest code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: 📦 Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
-          # Single source of truth: .nvmrc nel repo. Stessa versione
-          # garantita su locale (nvm/fnm/Volta) e CI.
           node-version-file: '.nvmrc'
 
       - name: 📦 Setup PHP
@@ -137,7 +133,7 @@ jobs:
         run: php forge build ${{ vars.FORCE_WWW == 'true' && '--force-www' || '' }}
 
       - name: 📂 Sincronizza file FTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        uses: SamKirkland/FTP-Deploy-Action@v4.4.0
         with:
             server: ${{ env.FTP_HOST }}
             username: ${{ env.FTP_USER }}
@@ -159,6 +155,10 @@ jobs:
               forge
               *.md
               docs/**
+              .gitignore
+              .npmrc
+              .nvmrc
+              .env.example
 
       - name: 🗄️ Update App
         shell: bash
