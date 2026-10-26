@@ -15,6 +15,7 @@ jobs:
     env:
       BWS_ACCESS_TOKEN: ${{ secrets.BWS_ACCESS_TOKEN }}
       BWS_PROJECT_ID: ${{ secrets.BWS_PROJECT_ID }}
+      DEPLOY_APP_DOMAIN: ${{ vars.APP_DOMAIN }}
       APP_DEPLOY_TOKEN: ${{ secrets.APP_DEPLOY_TOKEN }}
     steps:
     
@@ -88,11 +89,22 @@ jobs:
 
               done
 
+          # Host canonico: i siti forzano www con un redirect 301, quindi APP_URL
+          # e la chiamata di update devono puntare gia' a www (una POST/XHR
+          # cross-origin che riceve un 301 viene bloccata da CORS).
+          app_domain="${DEPLOY_APP_DOMAIN#http://}"
+          app_domain="${app_domain#https://}"
+          app_domain="${app_domain%%/*}"
+          app_domain="${app_domain#www.}"
+          [ -n "$app_domain" ] || { echo "Missing APP_DOMAIN"; exit 1; }
+          canonical_app_domain="www.${app_domain}"
+          echo "APP_CANONICAL_HOST=${canonical_app_domain}" >> "$GITHUB_ENV"
+
           cat >> .env <<EOF
 
           APP_DEBUG=false
-          APP_DOMAIN=${{ vars.APP_DOMAIN }}
-          APP_URL=https://${{ vars.APP_DOMAIN }}
+          APP_DOMAIN=${app_domain}
+          APP_URL=https://${canonical_app_domain}
 
           ASSETS_VERSION=${{ vars.ASSETS_VERSION }}
 
@@ -196,7 +208,7 @@ jobs:
           response_body=$(mktemp)
           status=$(curl -sS --retry 3 --retry-all-errors \
             -o "$response_body" -w '%{http_code}' \
-            -X POST "https://${{ vars.APP_DOMAIN }}/api/app/update/" \
+            -X POST "https://${APP_CANONICAL_HOST}/api/app/update/" \
             -H "Authorization: Bearer $deploy_token" \
             -H "Content-Type: application/json" \
             -d "{\"release_id\":\"$GITHUB_SHA\",\"source\":\"github\"}" \
