@@ -96,7 +96,7 @@ jobs:
 
           ASSETS_VERSION=${{ vars.ASSETS_VERSION }}
 
-          DB_CONNECTION_LOG=false
+          DB_CONNECTION_LOG=0
 
           EOF
 
@@ -133,6 +133,15 @@ jobs:
 
       - name: 🧱 Build static files (handler/index.php, .htaccess)
         run: php forge build ${{ vars.FORCE_WWW == 'true' && '--force-www' || '' }}
+
+      - name: 🔖 Marker di deploy (wonder-image.json)
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          printf '{"generator":"wonder-image","repo":"%s","commit":"%s","branch":"%s","run":%s,"deployedAt":"%s"}\n' \
+            "${GITHUB_REPOSITORY#*/}" "${GITHUB_SHA:0:7}" "${GITHUB_REF_NAME}" "${GITHUB_RUN_ID}" \
+            "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > wonder-image.json
 
       - name: 📂 Sincronizza file FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.4.0
