@@ -5,7 +5,9 @@
     },
     "contact" : {
       "title" : "Hai bisogno di maggiori informazioni?",
-      "subtitle" : "Compila il form"
+      "subtitle" : "Compila il form",
+      "expired" : "La pagina è scaduta. Ricarica la pagina e invia di nuovo la richiesta.",
+      "expired_retry" : "La sessione era scaduta. Invia di nuovo la richiesta."
     },
     "newsletter" : {
       "title" : "Iscriviti alla nostra newsletter",
