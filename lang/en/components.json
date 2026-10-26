@@ -5,7 +5,8 @@
     },
     "contact": {
       "title": "Need more information?",
-      "subtitle": "Fill out the form"
+      "subtitle": "Fill out the form",
+      "expired": "This page has expired. Reload the page and send your request again."
     },
     "newsletter": {
       "title": "Subscribe to our newsletter",

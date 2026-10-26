@@ -12,6 +12,7 @@ use Wonder\App\ResourceSchema\PageSchema;
 use Wonder\App\ResourceSchema\PermissionSchema;
 use Wonder\App\ResourceSchema\TableColumn;
 use Wonder\App\ResourceSchema\TableLayoutSchema;
+use Wonder\Http\Route;
 use Wonder\Plugin\Google\Credentials as GoogleCredentials;
 use Wonder\Plugin\Google\Security\reCAPTCHA;
 
@@ -164,7 +165,24 @@ final class RequestResource extends Resource
     {
         return ApiSchema::for(static::class)
             ->only(['store'])
+            ->allowPageToken()
             ->fields('store', ['name', 'surname', 'phone', 'email', 'request', 'request_url', 'accept_privacy_policy', 'files']);
+    }
+
+    /**
+     * Invio dal form contatti del sito: stesso handler di `store`, in più il
+     * CSRF di sessione. `store` resta per i client Bearer che non sono pagine.
+     */
+    public static function registerApiRoutes(string $rootApp, string $slug): void
+    {
+        $permissions = (array) static::permissionSchema()->get('api');
+
+        Route::post('/send/', $rootApp.'/http/api/resource/index.php', [
+            'resource' => $slug,
+            'resource_action' => 'store',
+        ])->name('send')
+            ->permit((array) ($permissions['store'] ?? []))
+            ->csrf();
     }
 
     public static function permissionSchema(): PermissionSchema

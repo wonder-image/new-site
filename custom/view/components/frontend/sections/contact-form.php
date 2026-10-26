@@ -12,6 +12,7 @@
 
     use App\Resources\Site\RequestResource;
     use Wonder\Elements\Form\Components\Submit;
+    use Wonder\Http\Csrf;
 
     $title    = $title    ?? __t('components.forms.contact.title');
     $subtitle = $subtitle ?? __t('components.forms.contact.subtitle');
@@ -39,6 +40,7 @@
 
                 <form id="contact-form-el" action="" method="post" enctype="multipart/form-data" class="wi-form d-grid col-2 gap-5 w-100">
 
+                    <?php if (Csrf::active()) : ?><?= Csrf::field()->render() ?><?php endif; ?>
                     <?= RequestResource::getInput('request_url') ?>
 
                     <?= RequestResource::getInput('name') ?>
@@ -63,7 +65,7 @@
                         <?=  (new Submit('send'))
                             ->label(__t('components.buttons.send'))
                             ->class('btn btn-primary f-end')
-                            ->onclick("formSubmit(this.form, '".__e('api.resource.requests.store')."', contactFormSubmitResponse)")
+                            ->onclick("formSubmit(this.form, '".__e('api.resource.requests.send')."', contactFormSubmitResponse)")
                             ->render(); 
                         ?>
                     </div>
@@ -98,6 +100,11 @@
             return '<?= addslashes(__t('components.buttons.retry')) ?>';
         }
 
+        // Sessione o token di pagina scaduti: mai il testo tecnico
+        if (contactFormExpired(data)) {
+            return '<?= addslashes(__t('components.forms.contact.expired')) ?>';
+        }
+
         if (typeof data.response === 'string') {
             return data.response;
         }
@@ -115,6 +122,30 @@
         }
 
         return '<?= addslashes(__t('components.buttons.retry')) ?>';
+
+    }
+
+    function contactFormExpired(data) {
+
+        var status = Number(data.status);
+
+        if (status === 401 || status === 403) {
+            return true;
+        }
+
+        var texts = [data.response];
+
+        if (typeof data.response === 'object') {
+            texts.push(data.response.message);
+
+            if (data.response.errors && typeof data.response.errors === 'object') {
+                texts = texts.concat(Object.values(data.response.errors));
+            }
+        }
+
+        return texts.some(function (text) {
+            return typeof text === 'string' && /csrf|token/i.test(text);
+        });
 
     }
 
