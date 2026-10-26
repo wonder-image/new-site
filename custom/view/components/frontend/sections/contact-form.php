@@ -79,6 +79,8 @@
 
 <script>
 
+    var contactFormRenewed = false;
+
     async function contactFormSubmitResponse(data) {
 
         var message = '<?= addslashes(__t('notifications.649.text')) ?>';
@@ -86,8 +88,9 @@
         if (!data || !data.success) {
             message = contactFormErrorMessage(data);
 
-            // Sessione o token di pagina scaduti: token nuovi, il secondo invio passa con i campi compilati
-            if (data && contactFormExpired(data) && await contactFormRenewTokens()) {
+            // Sessione o token di pagina scaduti: token nuovi una volta sola, poi resta «ricarica»
+            if (data && contactFormExpired(data) && !contactFormRenewed && await contactFormRenewTokens()) {
+                contactFormRenewed = true;
                 message = '<?= addslashes(__t('components.forms.contact.expired_retry')) ?>';
             }
         }
