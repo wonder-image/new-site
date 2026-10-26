@@ -79,18 +79,64 @@
 
 <script>
 
-    function contactFormSubmitResponse(data) {
+    async function contactFormSubmitResponse(data) {
 
         var message = '<?= addslashes(__t('notifications.649.text')) ?>';
 
         if (!data || !data.success) {
             message = contactFormErrorMessage(data);
+
+            // Sessione o token di pagina scaduti: token nuovi, il secondo invio passa con i campi compilati
+            if (data && contactFormExpired(data) && await contactFormRenewTokens()) {
+                message = '<?= addslashes(__t('components.forms.contact.expired_retry')) ?>';
+            }
         }
 
         loadingResponse({
             success: !!(data && data.success),
             response: message
         });
+
+    }
+
+    async function contactFormRenewTokens() {
+
+        var csrfEndpoint = '<?= addslashes(__e('csrf')) ?>';
+        var pageEndpoint = '<?= addslashes(__e('token.page')) ?>';
+        var field = document.querySelector('#contact-form-el input[name="_csrf"]');
+
+        if (csrfEndpoint === '' || pageEndpoint === '' || !field) {
+            return false;
+        }
+
+        try {
+            var csrf = await API_CLIENT.post(csrfEndpoint, {});
+
+            if (!csrf.token) {
+                return false;
+            }
+
+            field.value = csrf.token;
+
+            var meta = document.querySelector('meta[name="wi-csrf"]');
+
+            if (meta) {
+                meta.content = csrf.token;
+            }
+
+            // Il token di pagina è legato alla sessione: va rinnovato anche lui
+            var page = await API_CLIENT.post(pageEndpoint, {});
+
+            if (!page.token) {
+                return false;
+            }
+
+            API_CLIENT.token = page.token;
+
+            return true;
+        } catch (error) {
+            return false;
+        }
 
     }
 

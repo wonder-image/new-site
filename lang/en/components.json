@@ -6,7 +6,8 @@
     "contact": {
       "title": "Need more information?",
       "subtitle": "Fill out the form",
-      "expired": "This page has expired. Reload the page and send your request again."
+      "expired": "This page has expired. Reload the page and send your request again.",
+      "expired_retry": "Your session had expired. Please send your request again."
     },
     "newsletter": {
       "title": "Subscribe to our newsletter",
