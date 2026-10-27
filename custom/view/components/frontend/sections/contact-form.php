@@ -88,7 +88,7 @@
         if (!data || !data.success) {
             message = contactFormErrorMessage(data);
 
-            // Sessione o token di pagina scaduti: token nuovi una volta sola, poi resta «ricarica»
+            // Sessione o CSRF scaduti: CSRF nuovo una volta sola, poi resta «ricarica»
             if (data && contactFormExpired(data) && !contactFormRenewed && await contactFormRenewTokens()) {
                 contactFormRenewed = true;
                 message = '<?= addslashes(__t('components.forms.contact.expired_retry')) ?>';
@@ -105,10 +105,9 @@
     async function contactFormRenewTokens() {
 
         var csrfEndpoint = '<?= addslashes(__e('csrf')) ?>';
-        var pageEndpoint = '<?= addslashes(__e('token.page')) ?>';
         var field = document.querySelector('#contact-form-el input[name="_csrf"]');
 
-        if (csrfEndpoint === '' || pageEndpoint === '' || !field) {
+        if (csrfEndpoint === '' || !field) {
             return false;
         }
 
@@ -119,6 +118,7 @@
                 return false;
             }
 
+            // Campo del form e meta letto da ApiClient per X-WI-CSRF: la sessione basta, nessun bearer
             field.value = csrf.token;
 
             var meta = document.querySelector('meta[name="wi-csrf"]');
@@ -126,15 +126,6 @@
             if (meta) {
                 meta.content = csrf.token;
             }
-
-            // Il token di pagina è legato alla sessione: va rinnovato anche lui
-            var page = await API_CLIENT.post(pageEndpoint, {});
-
-            if (!page.token) {
-                return false;
-            }
-
-            API_CLIENT.token = page.token;
 
             return true;
         } catch (error) {
@@ -149,7 +140,7 @@
             return '<?= addslashes(__t('components.buttons.retry')) ?>';
         }
 
-        // Sessione o token di pagina scaduti: mai il testo tecnico
+        // Sessione o CSRF scaduti: mai il testo tecnico
         if (contactFormExpired(data)) {
             return '<?= addslashes(__t('components.forms.contact.expired')) ?>';
         }
