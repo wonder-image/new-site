@@ -16,6 +16,7 @@ jobs:
       BWS_ACCESS_TOKEN: ${{ secrets.BWS_ACCESS_TOKEN }}
       BWS_PROJECT_ID: ${{ secrets.BWS_PROJECT_ID }}
       DEPLOY_APP_DOMAIN: ${{ vars.APP_DOMAIN }}
+      FORCE_WWW: ${{ vars.FORCE_WWW }}
       APP_DEPLOY_TOKEN: ${{ secrets.APP_DEPLOY_TOKEN }}
     steps:
     
@@ -89,15 +90,41 @@ jobs:
 
               done
 
-          # Host canonico: i siti forzano www con un redirect 301, quindi APP_URL
-          # e la chiamata di update devono puntare gia' a www (una POST/XHR
-          # cross-origin che riceve un 301 viene bloccata da CORS).
+          # Host canonico: www solo se il sito forza www (DEPLOY_FORCE_WWW, lo
+          # stesso di forge build), così APP_URL e la chiamata di update evitano il 301
+          # (una POST/XHR cross-origin che lo riceve viene bloccata da CORS).
+          # Senza www si resta sul dominio nudo: un sottodominio come
+          # shop.esempio.it non ha il certificato per www.shop.esempio.it.
           app_domain="${DEPLOY_APP_DOMAIN#http://}"
           app_domain="${app_domain#https://}"
           app_domain="${app_domain%%/*}"
           app_domain="${app_domain#www.}"
           [ -n "$app_domain" ] || { echo "Missing APP_DOMAIN"; exit 1; }
-          canonical_app_domain="www.${app_domain}"
+          # Senza vars.FORCE_WWW: www per il dominio principale, no per un
+          # sottodominio (stesso default di forge provision).
+          force_www="$(printf '%s' "${FORCE_WWW:-}" | tr '[:upper:]' '[:lower:]' | tr -d '[:space:]')"
+          case "$force_www" in
+            true|false) ;;
+            "")
+              labels="$(printf '%s' "$app_domain" | awk -F. '{print NF}')"
+              base=2
+              case "$app_domain" in
+                *.co.uk|*.org.uk|*.ac.uk|*.gov.uk|*.com.au|*.net.au|*.org.au|*.co.nz|*.com.br|*.co.jp|*.co.za|*.com.mx|*.com.ar|*.com.tr) base=3 ;;
+              esac
+              if [ "$labels" -gt "$base" ]; then force_www=false; else force_www=true; fi
+              ;;
+            *)
+              echo "::error::vars.FORCE_WWW non valida (usa true o false)."
+              exit 1
+              ;;
+          esac
+          echo "DEPLOY_FORCE_WWW=${force_www}" >> "$GITHUB_ENV"
+
+          if [ "$force_www" = "true" ]; then
+            canonical_app_domain="www.${app_domain}"
+          else
+            canonical_app_domain="${app_domain}"
+          fi
           echo "APP_CANONICAL_HOST=${canonical_app_domain}" >> "$GITHUB_ENV"
 
           cat >> .env <<EOF
@@ -144,7 +171,7 @@ jobs:
         run: npm ci
 
       - name: 🧱 Build static files (handler/index.php, .htaccess)
-        run: php forge build ${{ vars.FORCE_WWW == 'true' && '--force-www' || '' }}
+        run: php forge build $( [ "$DEPLOY_FORCE_WWW" = "true" ] && echo --force-www )
 
       - name: 🔖 Marker di deploy (wonder-image.json)
         shell: bash
