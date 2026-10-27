@@ -81,7 +81,8 @@ jobs:
                 clean_value="$(printf '%s' "$value" | tr -d '\r' | tr '\n' ' ')"
 
                 case "$key" in
-                  FTP_*|BWS_*)
+                  # Il token Cloudflare serve solo al runner, non in produzione
+                  FTP_*|BWS_*|CLOUDFLARE_*)
                     ;;
                   *)
                     printf '%s=%s\n' "$key" "$clean_value" >> .env
@@ -209,6 +210,27 @@ jobs:
               .npmrc
               .nvmrc
               .env.example
+
+      # Riallinea la zona Cloudflare (php forge cloudflare:security): non blocca il deploy
+      - name: ☁️ Cloudflare
+        if: vars.APP_PROXY == 'cloudflare'
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [ -z "${CLOUDFLARE_API_TOKEN:-}" ]; then
+            echo "::notice::CLOUDFLARE_API_TOKEN assente nel project Bitwarden: step saltato."
+            exit 0
+          fi
+
+          # Il comando esiste solo con wonder-image/app aggiornato nel composer.lock
+          if ! php forge list --raw | grep -q '^cloudflare:security '; then
+            echo "::warning::php forge cloudflare:security non disponibile: aggiorna wonder-image/app."
+            exit 0
+          fi
+
+          php forge cloudflare:security --no-interaction --domain "$APP_CANONICAL_HOST"
 
       - name: 🗄️ Update App
         shell: bash
