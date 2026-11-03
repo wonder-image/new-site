@@ -1,26 +1,19 @@
 <?php
 
-    $key = 'cookie_policy';
+    use Wonder\Elements\Components\LegalDocument;
 
-    $SQL = sqlSelect( 'legal_documents', [ 'doc_type' => $key, 'language_code' => __l(), 'active' => 'true' ], 1, 'published_at DESC, id', 'DESC' );
-
-    if (!$SQL->exists) { exit; }
-
-    $DOCUMENT = infoLegalDocument($SQL->id);
-
-    $SEO->title = $DOCUMENT->name;
-    $SEO->description = $DOCUMENT->name;
+    $SEO->title = __t('legal.cookie_policy.seo.title');
+    $SEO->description = __t('legal.cookie_policy.seo.description');
     $SEO->url = __u('legal/cookie-policy');
+    $SEO->breadcrumb = [];
 
+    // Il testo viene dal documento legale attivo (backend → Documenti legali).
     \Wonder\View\View::layout('frontend.main');
-
 ?>
 
 <section class="intro">
     <div class="content">
-
-        <?= $DOCUMENT->renderContent ?>
-
+        <?= LegalDocument::make('cookie_policy')->render() ?>
     </div>
 </section>
 
