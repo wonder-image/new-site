@@ -54,3 +54,5 @@ skills-lock.json
 !/assets/upload/**/README.md
 /shared/sitemap/*
 !/shared/sitemap/.gitkeep
+# Local component demos (never deployed)
+/demo/
