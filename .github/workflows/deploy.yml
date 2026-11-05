@@ -50,6 +50,8 @@ jobs:
 
       - name: 🔐 Load secrets + generate .env
         shell: bash
+        env:
+          TRUST_PROXY_VAR: ${{ vars.APP_TRUST_PROXY }}
         run: |
           set -euo pipefail
 
@@ -94,7 +96,7 @@ jobs:
           # Host canonico: www solo se il sito forza www (DEPLOY_FORCE_WWW, lo
           # stesso di forge build), così APP_URL e la chiamata di update evitano il 301
           # (una POST/XHR cross-origin che lo riceve viene bloccata da CORS).
-          # Senza www si resta sul dominio nudo: un sottodominio come
+          # Senza FORCE_WWW si resta sul dominio nudo: un sottodominio come
           # shop.esempio.it non ha il certificato per www.shop.esempio.it.
           app_domain="${DEPLOY_APP_DOMAIN#http://}"
           app_domain="${app_domain#https://}"
@@ -150,6 +152,21 @@ jobs:
             printf 'APP_DEPLOY_TOKEN=%s\n' "$APP_DEPLOY_TOKEN" >> .env
           else
             echo "::warning::APP_DEPLOY_TOKEN secret non impostato: lo step 'Update App' fallirà."
+          fi
+
+          # APP_TRUST_PROXY non è un segreto: arriva dalla variabile del repo
+          # (vars.APP_TRUST_PROXY); un valore già presente in BWS ha la precedenza.
+          trust_proxy="$(printf '%s' "${TRUST_PROXY_VAR:-}" | tr '[:upper:]' '[:lower:]' | tr -d '[:space:]')"
+          if [ -n "$trust_proxy" ] && ! grep -q '^APP_TRUST_PROXY=' .env; then
+            case "$trust_proxy" in
+              1|true|on|yes|0|false|off|no)
+                printf 'APP_TRUST_PROXY=%s\n' "$trust_proxy" >> .env
+                ;;
+              *)
+                echo "::error::vars.APP_TRUST_PROXY non valida (usa true o false)."
+                exit 1
+                ;;
+            esac
           fi
 
       - name: Normalize FTP path
@@ -210,6 +227,10 @@ jobs:
               .npmrc
               .nvmrc
               .env.example
+              state/**
+              **/*.log
+              skills-lock.json
+              tests/**
 
       # Riallinea la zona Cloudflare (php forge cloudflare:security): non blocca il deploy
       - name: ☁️ Cloudflare
