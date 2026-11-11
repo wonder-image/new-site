@@ -8,40 +8,100 @@ on:
   # o con `gh workflow run deploy.yml`.
   workflow_dispatch:
 
+# Due deploy sulla stessa branch non girano mai insieme: due sync FTP in
+# parallelo corrompono .ftp-deploy-sync-state.json. Il secondo aspetta.
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
 jobs:
   web-deploy:
     name: 🎯 Deploy
     runs-on: ubuntu-26.04
+    timeout-minutes: 60
+    # I secret (BWS_ACCESS_TOKEN, APP_DEPLOY_TOKEN) stanno solo negli step che
+    # li usano: npm ci e composer install girano prima e non li vedono.
     env:
-      BWS_ACCESS_TOKEN: ${{ secrets.BWS_ACCESS_TOKEN }}
-      BWS_PROJECT_ID: ${{ secrets.BWS_PROJECT_ID }}
       DEPLOY_APP_DOMAIN: ${{ vars.APP_DOMAIN }}
       FORCE_WWW: ${{ vars.FORCE_WWW }}
-      APP_DEPLOY_TOKEN: ${{ secrets.APP_DEPLOY_TOKEN }}
     steps:
-    
+
+      # Action pinnate per SHA (un tag si può spostare): la versione è nel commento.
       - name: 🚚 Get latest code
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
       - name: 📦 Setup Node
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
         with:
           node-version-file: '.nvmrc'
+          cache: npm
 
       - name: 📦 Setup PHP
-        uses: shivammathur/setup-php@v2
+        uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
         with:
           php-version: '8.2'
+          extensions: gd
+          coverage: none
           tools: composer
 
-      - name: 📦 Install dependencies
+      - name: 📦 Strumenti di sistema
         run: |
+          command -v jq >/dev/null && command -v unzip >/dev/null && exit 0
           sudo apt-get update
           sudo apt-get install -y jq unzip
-     
+
+      # Le dipendenze si installano prima di caricare i secret: uno script di
+      # install compromesso non trova credenziali nell'ambiente.
+      - name: 📦 Installa Pacchetti PHP
+        run: composer install --no-dev --optimize-autoloader --no-scripts --no-interaction
+
+      - name: 📦 Installa Pacchetti JS
+        run: npm ci
+
+      - name: 🔎 Controllo sintassi PHP
+        shell: bash
+        run: |
+          set -euo pipefail
+          find . -name '*.php' -not -path './vendor/*' -not -path './node_modules/*' -print0 \
+            | xargs -0 -n 50 -P 4 php -l -d display_errors=stderr > /dev/null
+
+      - name: 🏷️ Versione assets
+        shell: bash
+        env:
+          ASSETS_VERSION_VAR: ${{ vars.ASSETS_VERSION }}
+        run: |
+          set -euo pipefail
+          # vars.ASSETS_VERSION, altrimenti il valore di .env.example
+          version="${ASSETS_VERSION_VAR:-}"
+          if [ -z "$version" ] && [ -f .env.example ]; then
+            version="$(sed -n 's/^ASSETS_VERSION=//p' .env.example | tr -d "\"'\r" | head -n1)"
+          fi
+          [[ "$version" =~ ^[A-Za-z0-9._-]+$ ]] || { echo "::error::ASSETS_VERSION non valida: '$version'"; exit 1; }
+          [ -d "assets/$version" ] || { echo "::error::La cartella assets/$version non esiste: allinea vars.ASSETS_VERSION."; exit 1; }
+          echo "DEPLOY_ASSETS_VERSION=$version" >> "$GITHUB_ENV"
+
+      # CSS e JS del sito minificati sul posto (non quelli della lib, già minificati).
+      # Disattivabile con vars.DEPLOY_MINIFY=false.
+      - name: 🗜️ Minifica CSS e JS
+        if: vars.DEPLOY_MINIFY != 'false'
+        run: bash .github/scripts/minify-assets.sh "assets/$DEPLOY_ASSETS_VERSION"
+
+      # Varianti responsive + WebP delle immagini statiche, come per gli upload.
+      # Misure: vars.RESPONSIVE_IMAGE_SIZES (es. "480,960,1920"), default del framework.
+      # Disattivabile con vars.DEPLOY_IMAGE_VARIANTS=false.
+      - name: 🖼️ Varianti immagini (resize + WebP)
+        if: vars.DEPLOY_IMAGE_VARIANTS != 'false'
+        env:
+          RESPONSIVE_IMAGE_SIZES: ${{ vars.RESPONSIVE_IMAGE_SIZES }}
+        run: php .github/scripts/image-variants.php "assets/$DEPLOY_ASSETS_VERSION/images"
+
       - name: 📦 Install Bitwarden Secrets Manager CLI
         run: |
-          curl -Lso bws.zip https://github.com/bitwarden/sdk-sm/releases/download/bws-v2.0.0/bws-x86_64-unknown-linux-gnu-2.0.0.zip
+          curl -fLso bws.zip https://github.com/bitwarden/sdk-sm/releases/download/bws-v2.0.0/bws-x86_64-unknown-linux-gnu-2.0.0.zip
+          echo "a8340ce01da609200441f2eca0e591173e124f012c88a16afda574279c052013  bws.zip" | sha256sum -c -
           unzip -o bws.zip
           chmod +x bws
           sudo mv bws /usr/local/bin/bws
@@ -51,6 +111,9 @@ jobs:
       - name: 🔐 Load secrets + generate .env
         shell: bash
         env:
+          BWS_ACCESS_TOKEN: ${{ secrets.BWS_ACCESS_TOKEN }}
+          BWS_PROJECT_ID: ${{ secrets.BWS_PROJECT_ID }}
+          APP_DEPLOY_TOKEN: ${{ secrets.APP_DEPLOY_TOKEN }}
           TRUST_PROXY_VAR: ${{ vars.APP_TRUST_PROXY }}
         run: |
           set -euo pipefail
@@ -58,40 +121,18 @@ jobs:
           umask 077
           : > .env
 
-          bws secret list "$BWS_PROJECT_ID" \
-            | jq -c '.[] | select(.key != null and .value != null)' \
-            | while read -r item; do
-                key="$(echo "$item" | jq -r '.key')"
-                value="$(echo "$item" | jq -r '.value')"
+          secrets_json="$(bws secret list "$BWS_PROJECT_ID")"
 
-                # Maschera sempre
-                echo "::add-mask::$value"
+          # Secret obbligatori: meglio fermarsi qui che caricare un sito senza DB.
+          missing=""
+          for key in FTP_HOST FTP_USER FTP_PASSWORD FTP_REMOTE_PATH DB_HOSTNAME DB_USERNAME DB_PASSWORD DB_DATABASE; do
+            jq -e --arg k "$key" 'any(.[]; .key == $k and (.value // "") != "")' <<<"$secrets_json" >/dev/null || missing="$missing $key"
+          done
+          [ -z "$missing" ] || { echo "::error::Secret mancanti nel project Bitwarden:$missing"; exit 1; }
 
-                if [[ "$value" == *$'\n'* ]]; then
-                  # ✅ MULTILINE → formato speciale GitHub
-                  {
-                    echo "$key<<EOF"
-                    echo "$value"
-                    echo "EOF"
-                  } >> "$GITHUB_ENV"
-                else
-                  # ✅ SINGLE LINE → safe
-                  printf '%s=%s\n' "$key" "$value" >> "$GITHUB_ENV"
-                fi
-
-                # .env → meglio sempre single-line (flatten)
-                clean_value="$(printf '%s' "$value" | tr -d '\r' | tr '\n' ' ')"
-
-                case "$key" in
-                  # Il token Cloudflare serve solo al runner, non in produzione
-                  FTP_*|BWS_*|CLOUDFLARE_*)
-                    ;;
-                  *)
-                    printf '%s=%s\n' "$key" "$clean_value" >> .env
-                    ;;
-                esac
-
-              done
+          # Maschera, esporta in $GITHUB_ENV e scrive .env con i valori quotati
+          # per phpdotenv (spazi, #, $, virgolette e a capo non rompono più il sito).
+          bash .github/scripts/secrets-to-env.sh .env <<<"$secrets_json"
 
           # Host canonico: www solo se il sito forza www (DEPLOY_FORCE_WWW, lo
           # stesso di forge build), così APP_URL e la chiamata di update evitano il 301
@@ -136,7 +177,7 @@ jobs:
           APP_DOMAIN=${app_domain}
           APP_URL=https://${canonical_app_domain}
 
-          ASSETS_VERSION=${{ vars.ASSETS_VERSION }}
+          ASSETS_VERSION=${DEPLOY_ASSETS_VERSION}
 
           DB_CONNECTION_LOG=0
 
@@ -145,8 +186,7 @@ jobs:
           # APP_DEPLOY_TOKEN deve finire nel .env di produzione perché
           # /api/app/update/ lo legge da $_ENV per autorizzare la richiesta
           # del workflow (deploy bootstrap bypass del flow JWT). Il secret
-          # è già esposto nel blocco env del job, quindi è disponibile come
-          # variabile shell qui sotto.
+          # arriva dal blocco env di questo step.
           if [ -n "${APP_DEPLOY_TOKEN:-}" ]; then
             echo "::add-mask::$APP_DEPLOY_TOKEN"
             printf 'APP_DEPLOY_TOKEN=%s\n' "$APP_DEPLOY_TOKEN" >> .env
@@ -181,12 +221,6 @@ jobs:
 
           echo "::add-mask::$path"
           printf 'FTP_REMOTE_PATH=%s\n' "$path" >> "$GITHUB_ENV"
-          
-      - name: 📦 Installa Pacchetti PHP
-        run: composer install --no-dev --optimize-autoloader --no-scripts
-
-      - name: 📦 Installa Pacchetti JS
-        run: npm ci
 
       - name: 🧱 Build static files (handler/index.php, .htaccess)
         run: php forge build $( [ "$DEPLOY_FORCE_WWW" = "true" ] && echo --force-www )
@@ -200,9 +234,12 @@ jobs:
             "${GITHUB_REPOSITORY#*/}" "${GITHUB_SHA:0:7}" "${GITHUB_REF_NAME}" "${GITHUB_RUN_ID}" \
             "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > wonder-image.json
 
+      # vars.FTP_PROTOCOL=ftps se l'hosting lo supporta: con ftp la password
+      # viaggia in chiaro.
       - name: 📂 Sincronizza file FTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.4.0
+        uses: SamKirkland/FTP-Deploy-Action@110f9186c050f71550953127052e77650219c287 # v4.4.0
         with:
+            protocol: ${{ vars.FTP_PROTOCOL || 'ftp' }}
             server: ${{ env.FTP_HOST }}
             username: ${{ env.FTP_USER }}
             password: ${{ env.FTP_PASSWORD }}
@@ -215,6 +252,7 @@ jobs:
               **/.github*
               **/.github/**
               **/.vscode/**
+              .devcontainer/**
               **/composer.json
               **/composer.lock
               **/package.json
@@ -255,6 +293,8 @@ jobs:
 
       - name: 🗄️ Update App
         shell: bash
+        env:
+          APP_DEPLOY_TOKEN: ${{ secrets.APP_DEPLOY_TOKEN }}
         run: |
           set -euo pipefail
 
