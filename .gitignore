@@ -56,3 +56,6 @@ skills-lock.json
 !/shared/sitemap/.gitkeep
 # Local component demos (never deployed)
 /demo/
+
+# Dev container (dati MariaDB, log, credenziali locali)
+/.devcontainer/.local/
