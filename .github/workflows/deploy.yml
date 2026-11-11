@@ -124,9 +124,11 @@ jobs:
           secrets_json="$(bws secret list "$BWS_PROJECT_ID")"
 
           # Secret obbligatori: meglio fermarsi qui che caricare un sito senza DB.
+          # A|B = basta uno dei due nomi (il framework accetta DB_HOST/DB_USER/DB_NAME
+          # come alias di DB_HOSTNAME/DB_USERNAME/DB_DATABASE, vedi EnvCompat).
           missing=""
-          for key in FTP_HOST FTP_USER FTP_PASSWORD FTP_REMOTE_PATH DB_HOSTNAME DB_USERNAME DB_PASSWORD DB_DATABASE; do
-            jq -e --arg k "$key" 'any(.[]; .key == $k and (.value // "") != "")' <<<"$secrets_json" >/dev/null || missing="$missing $key"
+          for keys in FTP_HOST FTP_USER FTP_PASSWORD FTP_REMOTE_PATH DB_HOSTNAME\|DB_HOST DB_USERNAME\|DB_USER DB_PASSWORD DB_DATABASE\|DB_NAME; do
+            jq -e --arg k "$keys" '($k | split("|")) as $ks | any(.[]; (.key as $x | $ks | index($x)) != null and (.value // "") != "")' <<<"$secrets_json" >/dev/null || missing="$missing $keys"
           done
           [ -z "$missing" ] || { echo "::error::Secret mancanti nel project Bitwarden:$missing"; exit 1; }
 
