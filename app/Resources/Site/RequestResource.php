@@ -2,6 +2,7 @@
 
 namespace App\Resources\Site;
 
+use App\Support\SafeUrl;
 use RuntimeException;
 use Wonder\App\LegacyGlobals;
 use Wonder\App\Resource;
@@ -230,8 +231,10 @@ final class RequestResource extends Resource
 
         $attachments = static::attachmentPaths($values['files'] ?? null, (string) $path->rUpload);
 
-        $customerSubject = __t('emails.contact_request_customer.subject', $values);
-        $customerBody = __t('emails.contact_request_customer.text', $values);
+        $mailValues = static::mailValues($values);
+
+        $customerSubject = __t('emails.contact_request_customer.subject', $mailValues);
+        $customerBody = __t('emails.contact_request_customer.text', $mailValues);
 
         sendMail(
             $society->email,
@@ -241,17 +244,17 @@ final class RequestResource extends Resource
             $attachments
         );
 
-        $adminSubject = __t('emails.contact_request_admin.subject', $values);
+        $adminSubject = __t('emails.contact_request_admin.subject', $mailValues);
         $adminDetails = '';
 
         foreach (['name', 'surname', 'phone', 'email', 'request'] as $field) {
-            $adminDetails .= __t("components.forms.fields.{$field}.label").': '.($values[$field] ?? '').'<br>';
+            $adminDetails .= __t("components.forms.fields.{$field}.label").': '.($mailValues[$field] ?? '').'<br>';
         }
 
         $adminBody = __t('emails.contact_request_admin.text', [
             'body' => $adminDetails,
             'request' => "{$path->backend}/".static::$model::$folder."/{$requestId}/",
-            'request_url' => $values['request_url'] ?? '',
+            'request_url' => $mailValues['request_url'],
         ]);
 
         sendMail(
@@ -261,6 +264,30 @@ final class RequestResource extends Resource
             $adminBody,
             $attachments
         );
+    }
+
+    /**
+     * Segnaposto per i template mail: valori riportati in chiaro (come in
+     * lettura dal DB) e poi escapati. I valori salvati non cambiano.
+     *
+     * @param array<string, mixed> $values
+     * @return array<string, string>
+     */
+    public static function mailValues(array $values): array
+    {
+        $mailValues = [];
+
+        foreach ($values as $key => $value) {
+            if ($value === null || is_scalar($value)) {
+                $plain = sanitizeEcho((string) $value);
+                // Il messaggio conserva gli a capo, come nella scheda backend
+                $mailValues[$key] = $key === 'request' ? e_br($plain) : e($plain);
+            }
+        }
+
+        $mailValues['request_url'] = e(SafeUrl::http(sanitizeEcho((string) ($values['request_url'] ?? '')), ''));
+
+        return $mailValues;
     }
 
     private static function attachmentPaths(mixed $storedFiles, string $uploadRoot): array
