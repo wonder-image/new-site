@@ -18,8 +18,13 @@ permissions:
   contents: read
 
 jobs:
+  # Stessi controlli delle PR (ci.yml): se falliscono, niente deploy.
+  checks:
+    uses: ./.github/workflows/ci.yml
+
   web-deploy:
     name: 🎯 Deploy
+    needs: checks
     runs-on: ubuntu-26.04
     timeout-minutes: 60
     # I secret (BWS_ACCESS_TOKEN, APP_DEPLOY_TOKEN) stanno solo negli step che
@@ -270,6 +275,8 @@ jobs:
               state/**
               **/*.log
               skills-lock.json
+              .claude/**
+              .agents/**
               tests/**
 
       # Riallinea la zona Cloudflare (php forge cloudflare:security): non blocca il deploy

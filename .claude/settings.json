@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "allow": [
+      "Bash(php -l:*)",
+      "Bash(php tests/*)",
+      "Bash(php .github/scripts/check-lang.php)",
+      "Bash(composer dump-autoload:*)",
+      "Bash(composer install --no-scripts:*)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)"
+    ],
+    "ask": [
+      "Bash(composer update:*)",
+      "Bash(composer require:*)",
+      "Bash(composer remove:*)",
+      "Bash(npm install:*)",
+      "Bash(npm uninstall:*)",
+      "Bash(php forge update*)",
+      "Bash(php forge db*)",
+      "Bash(git push:*)",
+      "Bash(rm -rf:*)",
+      "Edit(/.github/**)",
+      "Edit(/.htaccess)",
+      "Edit(/composer.json)",
+      "Edit(/package.json)",
+      "Edit(/custom/config/permissions.php)",
+      "Edit(/custom/config/access.php)",
+      "Edit(/custom/config/modules.php)"
+    ],
+    "deny": [
+      "Bash(php forge provision:*)",
+      "Bash(php forge credentials:*)",
+      "Bash(php forge db:init*)",
+      "Bash(php forge build:*)",
+      "Bash(php forge config:*)",
+      "Bash(php forge cloudflare*)",
+      "Bash(git push origin main:*)",
+      "Bash(git push origin HEAD:main*)",
+      "Bash(git push -f:*)",
+      "Bash(git push --force:*)",
+      "Bash(bws:*)",
+      "Read(/.env)",
+      "Edit(/.env)",
+      "Edit(/vendor/**)",
+      "Edit(/node_modules/**)",
+      "Edit(/assets/lib/**)",
+      "Edit(/assets/*/css/set-up/**)",
+      "Edit(/docs/ai/DESIGN.md)",
+      "Edit(/handler/index.php)",
+      "Edit(/robots.txt)",
+      "Edit(/shared/sitemap/**)",
+      "Edit(/assets/upload/**)"
+    ]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|MultiEdit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "php \"$CLAUDE_PROJECT_DIR/.claude/hooks/php-lint.php\"",
+            "timeout": 30
+          }
+        ]
+      }
+    ]
+  }
+}
