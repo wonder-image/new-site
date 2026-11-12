@@ -2,8 +2,10 @@
 # OS files
 .DS_Store
 
-# Claude Code
-.claude/
+# Claude Code: settings.json and hooks/ are shared, the rest is personal
+/.claude/*
+!/.claude/settings.json
+!/.claude/hooks/
 
 # Codex Skill Builder (generated tool output, not source)
 .codex-skill-build/

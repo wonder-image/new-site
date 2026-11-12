@@ -1,0 +1,65 @@
+name: ✅ Controlli
+
+# Gira su ogni PR e prima di ogni deploy (deploy.yml la richiama con
+# workflow_call): se fallisce, il sito non viene caricato.
+on:
+  pull_request:
+  workflow_call:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    name: ✅ Sintassi, test, traduzioni
+    runs-on: ubuntu-26.04
+    timeout-minutes: 15
+    steps:
+      # Action pinnate per SHA (un tag si può spostare): la versione è nel commento.
+      - name: 🚚 Get latest code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: 📦 Setup PHP
+        uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
+        with:
+          php-version: '8.2'
+          extensions: gd
+          coverage: none
+          tools: composer
+
+      # --no-scripts: niente `php forge config`, niente secret, niente npm.
+      - name: 📦 Installa Pacchetti PHP
+        run: composer install --no-scripts --no-interaction --no-progress
+
+      - name: 🔎 Controllo sintassi PHP
+        shell: bash
+        run: |
+          set -euo pipefail
+          find . -name '*.php' -not -path './vendor/*' -not -path './node_modules/*' -print0 \
+            | xargs -0 -n 50 -P 4 php -l -d display_errors=stderr > /dev/null
+
+      - name: 🧪 Test
+        shell: bash
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          tests=(tests/*Test.php)
+          if [ ${#tests[@]} -eq 0 ]; then
+            echo "::notice::Nessun test in tests/: aggiungine uno per ogni comportamento che non deve rompersi."
+            exit 0
+          fi
+          failed=0
+          for t in "${tests[@]}"; do
+            echo "::group::$t"
+            php "$t" || failed=1
+            echo "::endgroup::"
+          done
+          exit "$failed"
+
+      - name: 🌍 Traduzioni
+        run: php .github/scripts/check-lang.php

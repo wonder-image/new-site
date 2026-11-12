@@ -32,7 +32,7 @@ Esempi:
 ## Cosa NON mettere qui
 
 - Pagine intere -> `custom/view/pages/`
-- Schemi tabella DB -> `custom/build/table/`
+- Schemi tabella DB -> Model in `app/Models/` (`tableSchema()`), non `custom/build/table/` (legacy)
 - Helper globali -> `custom/function/function.php`
 - Classi PHP con namespace -> `app/`
 - Configurazione -> `custom/config/`
