@@ -1,8 +1,8 @@
 # Dev container
 
 Ambiente di sviluppo completo per VS Code Dev Containers e GitHub Codespaces:
-PHP 8.2 (come la CI di deploy), Node 24 (da `.nvmrc`), Composer, `gh` e
-MariaDB nello stesso container.
+PHP 8.2 (come la CI di deploy), Node 24 (da `.nvmrc`), Composer, `gh`,
+MariaDB e ffmpeg/ffprobe (resize dei video e copertine) nello stesso container.
 
 ## Avvio
 
@@ -11,7 +11,8 @@ MariaDB nello stesso container.
 
 Al primo avvio `setup.sh` (postCreate) esegue, in ordine:
 
-1. `verify.sh`: versioni ed estensioni PHP richieste da `composer.lock`;
+1. `verify.sh`: versioni ed estensioni PHP richieste da `composer.lock`,
+   presenza di `ffmpeg` e `ffprobe`;
 2. crea `.env` da `.env.example` se manca, con `APP_DOMAIN` ricavato dalla
    cartella (`nome-tld` → `nome.tld`);
 3. `composer install` (che lancia `php forge config` e `npm install`);
@@ -36,6 +37,10 @@ XDEBUG_MODE=debug bash .devcontainer/start.sh   # server con Xdebug attivo
 ```
 
 ## Note
+
+- ffmpeg c'è solo nel container di sviluppo. Sull'hosting di produzione va
+  verificato a parte (molti hosting condivisi non lo hanno): il codice che lo
+  usa deve controllarne la presenza e degradare senza errori.
 
 - Dati MariaDB, log, PID e credenziali admin stanno in
   `.devcontainer/.local/`, ignorata da git ed esclusa dal deploy.
