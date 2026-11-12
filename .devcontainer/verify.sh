@@ -16,6 +16,16 @@ for ext in ctype curl dom fileinfo filter gd hash iconv json libxml mbstring mys
 done
 [ "$missing" -eq 0 ] && echo "✅ Estensioni PHP presenti"
 
+# ffmpeg/ffprobe: resize dei video e copertine
+for bin in ffmpeg ffprobe; do
+  if command -v "$bin" >/dev/null 2>&1; then
+    echo "✅ $("$bin" -version | head -n 1)"
+  else
+    echo "❌ $bin mancante: ricostruisci il container (Dev Containers: Rebuild Container)" >&2
+    missing=1
+  fi
+done
+
 if [ -f composer.lock ]; then
   composer check-platform-reqs --lock --no-interaction
 fi
