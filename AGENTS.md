@@ -126,8 +126,11 @@ Install the Wonder skills once per machine (not versioned in this repo):
 npx skills add wonder-image/skills --skill '*'
 ```
 
-`wi-site` covers work in this repo, `wi-app` the framework API it points to.
-External design skills are installed on demand by `wi-site` with `--global`.
+`wi-site` covers work in this repo, `wi-app` the framework API it points to,
+`wi-review` the review before a pull request, `wi-testing` the tests in
+`tests/`. `wi-sync` (run by hand) realigns a boilerplate or site with
+`wonder-image/new-site`. External design skills are installed on demand by
+`wi-site` with `--global`.
 
 ## Validation (definition of done)
 
