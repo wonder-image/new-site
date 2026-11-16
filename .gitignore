@@ -10,7 +10,8 @@
 # Codex Skill Builder (generated tool output, not source)
 .codex-skill-build/
 
-# Skills installed via `npx skills add ...` (auto-updated by the tool)
+# AI skills: installed per project in .claude/skills/ by `php forge skills`
+# (covered by /.claude/* above); .agents/ is the legacy location
 .agents/
 skills-lock.json
 

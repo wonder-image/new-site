@@ -1,6 +1,18 @@
 {
     "contact_request_customer": {
         "subject": "Request Sent",
-        "text": "Hello {{name}},<br>Your request has been successfully sent. We will respond as soon as possible.<br>Best regards."
+        "preheader": "We will respond as soon as possible.",
+        "heading": "We received your request",
+        "text": "Hello {{name}},\nyour request has been successfully sent. We will respond as soon as possible.",
+        "summary": "Your request",
+        "signature": "Best regards."
+    },
+    "contact_request_admin": {
+        "subject": "New contact from the website",
+        "preheader": "Request from {{name}} {{surname}}",
+        "heading": "New contact from the website",
+        "text": "Here are the contact details:",
+        "button": "View the request",
+        "request_url": "Submitted from"
     }
 }

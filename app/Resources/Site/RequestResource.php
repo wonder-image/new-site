@@ -13,6 +13,7 @@ use Wonder\App\ResourceSchema\PageSchema;
 use Wonder\App\ResourceSchema\PermissionSchema;
 use Wonder\App\ResourceSchema\TableColumn;
 use Wonder\App\ResourceSchema\TableLayoutSchema;
+use Wonder\App\Support\Mail\MailMessage;
 use Wonder\Http\Route;
 use Wonder\Plugin\Google\Credentials as GoogleCredentials;
 use Wonder\Plugin\Google\Security\reCAPTCHA;
@@ -234,7 +235,15 @@ final class RequestResource extends Resource
         $mailValues = static::mailValues($values);
 
         $customerSubject = __t('emails.contact_request_customer.subject', $mailValues);
-        $customerBody = __t('emails.contact_request_customer.text', $mailValues);
+        $customerBody = MailMessage::make()
+            ->preheader(__t('emails.contact_request_customer.preheader', $mailValues))
+            ->heading(__t('emails.contact_request_customer.heading', $mailValues))
+            ->text(__t('emails.contact_request_customer.text', $mailValues))
+            ->details(
+                $mailValues['request'] === '' ? [] : [__t('components.forms.fields.request.label') => $mailValues['request']],
+                __t('emails.contact_request_customer.summary')
+            )
+            ->small(__t('emails.contact_request_customer.signature', $mailValues));
 
         sendMail(
             $society->email,
@@ -245,17 +254,22 @@ final class RequestResource extends Resource
         );
 
         $adminSubject = __t('emails.contact_request_admin.subject', $mailValues);
-        $adminDetails = '';
+        $adminDetails = [];
 
         foreach (['name', 'surname', 'phone', 'email', 'request'] as $field) {
-            $adminDetails .= __t("components.forms.fields.{$field}.label").': '.($mailValues[$field] ?? '').'<br>';
+            $adminDetails[__t("components.forms.fields.{$field}.label")] = $mailValues[$field] ?? '';
         }
 
-        $adminBody = __t('emails.contact_request_admin.text', [
-            'body' => $adminDetails,
-            'request' => "{$path->backend}/".static::$model::$folder."/{$requestId}/",
-            'request_url' => $mailValues['request_url'],
-        ]);
+        $adminBody = MailMessage::make()
+            ->preheader(__t('emails.contact_request_admin.preheader', $mailValues))
+            ->heading(__t('emails.contact_request_admin.heading', $mailValues))
+            ->text(__t('emails.contact_request_admin.text', $mailValues))
+            ->details($adminDetails)
+            ->button(__t('emails.contact_request_admin.button'), "{$path->backend}/".static::$model::$folder."/{$requestId}/");
+
+        if ($mailValues['request_url'] !== '') {
+            $adminBody->details([__t('emails.contact_request_admin.request_url') => $mailValues['request_url']]);
+        }
 
         sendMail(
             $society->email,
@@ -267,8 +281,9 @@ final class RequestResource extends Resource
     }
 
     /**
-     * Segnaposto per i template mail: valori riportati in chiaro (come in
-     * lettura dal DB) e poi escapati. I valori salvati non cambiano.
+     * Segnaposto per le mail: valori riportati in chiaro, come in lettura dal
+     * DB. Non vanno escapati qui: lo fa `MailMessage` blocco per blocco.
+     * I valori salvati non cambiano.
      *
      * @param array<string, mixed> $values
      * @return array<string, string>
@@ -279,13 +294,12 @@ final class RequestResource extends Resource
 
         foreach ($values as $key => $value) {
             if ($value === null || is_scalar($value)) {
-                $plain = sanitizeEcho((string) $value);
-                // Il messaggio conserva gli a capo, come nella scheda backend
-                $mailValues[$key] = $key === 'request' ? e_br($plain) : e($plain);
+                $mailValues[$key] = sanitizeEcho((string) $value);
             }
         }
 
-        $mailValues['request_url'] = e(SafeUrl::http(sanitizeEcho((string) ($values['request_url'] ?? '')), ''));
+        $mailValues['request'] ??= '';
+        $mailValues['request_url'] = SafeUrl::http(sanitizeEcho((string) ($values['request_url'] ?? '')), '');
 
         return $mailValues;
     }

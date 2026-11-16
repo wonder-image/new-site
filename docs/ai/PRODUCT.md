@@ -25,9 +25,9 @@
 
 ## Asset paths
 
-> Logo e favicon si caricano dal backend e vivono in `assets/upload/logos/`
-> (`Logo.png`, `Logo-White.png`, `Logo-Black.png`, `Logo-Icon.png`, `App-Icon.png`)
-> e `assets/upload/favicon.ico` (vedi `App\Path`). Elencare qui solo asset che
+> Logo e icone si caricano dal backend e nelle viste si leggono da `$SOCIETY`
+> (`logo`, `logoWhite`, `logoBlack`, `icon`): mai percorsi scritti a mano. Le
+> immagini dei contenuti stanno nella libreria Media. Elencare qui solo asset che
 > esistono davvero (es. immagine OG di default, illustrazioni), con il percorso
 > relativo alla root del sito.
 
