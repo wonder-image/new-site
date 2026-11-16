@@ -3281,12 +3281,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/wonder-image/app.git",
-                "reference": "8a50ca28db83ca2e7dd8d15dc142f67449ea6e96"
+                "reference": "ce7a105d041a25f5929e2893de2ff6d15bfa99f6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/wonder-image/app/zipball/8a50ca28db83ca2e7dd8d15dc142f67449ea6e96",
-                "reference": "8a50ca28db83ca2e7dd8d15dc142f67449ea6e96",
+                "url": "https://api.github.com/repos/wonder-image/app/zipball/ce7a105d041a25f5929e2893de2ff6d15bfa99f6",
+                "reference": "ce7a105d041a25f5929e2893de2ff6d15bfa99f6",
                 "shasum": ""
             },
             "require": {
@@ -3312,7 +3312,7 @@
             "type": "library",
             "extra": {
                 "wonder": {
-                    "lib": "^2.1.2-alpha.39"
+                    "lib": "^2.1.2-alpha.42"
                 }
             },
             "autoload": {
@@ -3341,7 +3341,8 @@
                 "issues": "https://github.com/wonder-image/app/issues",
                 "source": "https://github.com/wonder-image/app/tree/main"
             },
-            "time": "2026-11-05T09:05:36+00:00"
+            "time": "2026-11-13T17:20:59+00:00",
+            "published-time": "2026-11-13T17:21:03+00:00"
         }
     ],
     "packages-dev": [],
@@ -3359,5 +3360,5 @@
     "platform-overrides": {
         "php": "8.2.30"
     },
-    "plugin-api-version": "2.9.0"
+    "plugin-api-version": "2.11.0"
 }

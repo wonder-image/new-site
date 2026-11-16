@@ -1,10 +1,18 @@
 {
     "contact_request_customer" : {
         "subject" : "Richiesta inviata",
-        "text" : "Buongiorno {{name}},<br>La tua richiesta è stata inviata con successo. Ti risponderemo il prima possibile.<br>Cordiali saluti."
+        "preheader" : "Ti risponderemo il prima possibile.",
+        "heading" : "Abbiamo ricevuto la tua richiesta",
+        "text" : "Buongiorno {{name}},\nla tua richiesta è stata inviata con successo. Ti risponderemo il prima possibile.",
+        "summary" : "La tua richiesta",
+        "signature" : "Cordiali saluti."
     },
     "contact_request_admin" : {
         "subject" : "Nuovo contatto dal sito",
-        "text" : "Ecco i dettagli del contatto:<br>{{body}}<br><br><a href=\"{{request}}\">Clicca qui</a> per vedere la richiesta.<br><br>Link invio richiesta:<br><a href='{{request_url}}'>{{request_url}}</a>"
+        "preheader" : "Richiesta da {{name}} {{surname}}",
+        "heading" : "Nuovo contatto dal sito",
+        "text" : "Ecco i dettagli del contatto:",
+        "button" : "Vedi la richiesta",
+        "request_url" : "Pagina di invio"
     }
 }
