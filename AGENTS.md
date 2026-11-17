@@ -220,8 +220,8 @@ run these commands.
 
 ## Repo-specific gotchas
 
-- `composer.json` requires `wonder-image/app` as `dev-main`: the framework
-  changes without a tag. If something breaks after `composer update`, check
+- `composer.json` requires `wonder-image/app` as `^2.4.0`: the framework
+  changes only with new 2.x tags. If something breaks after `composer update`, check
   the framework commit log before patching the site.
 - The legacy globals (`$ROOT`, `$ROOT_APP`, `$PATH`, `$SEO`, `$SOCIETY`, `$DB`,
   `$DEFAULT`) come from `vendor/wonder-image/app/wonder-image.php` via
