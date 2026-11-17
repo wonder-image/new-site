@@ -157,6 +157,12 @@ jobs:
           # per phpdotenv (spazi, #, $, virgolette e a capo non rompono più il sito).
           bash .github/scripts/secrets-to-env.sh .env <<<"$secrets_json"
 
+          # APP_ENV è obbligatorio dal framework: senza, il sito risponde 500.
+          # Se arriva già dai secret (es. staging) si tiene quel valore.
+          if ! grep -q '^APP_ENV=' .env; then
+            printf '\nAPP_ENV=production\n' >> .env
+          fi
+
           # Host canonico: www solo se il sito forza www (DEPLOY_FORCE_WWW, lo
           # stesso di forge build), così APP_URL e la chiamata di update evitano il 301
           # (una POST/XHR cross-origin che lo riceve viene bloccata da CORS).
