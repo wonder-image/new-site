@@ -9,9 +9,9 @@
     "license": "proprietary",
     "require": {
         "php": "^8.2",
-        "wonder-image/app": "dev-main"
+        "wonder-image/app": "^2.4.0"
     },
-    "minimum-stability": "dev",
+    "minimum-stability": "stable",
     "prefer-stable": true,
     "autoload": {
         "psr-4": {
