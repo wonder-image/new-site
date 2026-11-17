@@ -2,9 +2,9 @@
     "private": true,
     "scripts": {
         "skills:install": "npx skills experimental_install",
-        "postinstall": "rm -rf assets/lib/wonder-image && mkdir -p assets/lib/wonder-image && cp -R node_modules/wonder-image/dist assets/lib/wonder-image/dist"
+        "postinstall": "rm -rf assets/lib/wonder-image && mkdir -p assets/lib/wonder-image && cp -R node_modules/@wonder-image/lib/dist assets/lib/wonder-image/dist"
     },
     "dependencies": {
-        "wonder-image": "^2.1.2-alpha.45"
+        "@wonder-image/lib": "^2.1.2-alpha.45"
     }
 }

@@ -28,7 +28,9 @@ jobs:
     runs-on: ubuntu-26.04
     timeout-minutes: 60
     # I secret (BWS_ACCESS_TOKEN, APP_DEPLOY_TOKEN) stanno solo negli step che
-    # li usano: npm ci e composer install girano prima e non li vedono.
+    # li usano: npm ci e composer install girano prima e non li vedono. Unica
+    # eccezione: il token di sola lettura dei pacchetti (NPM_GITHUB_TOKEN) è
+    # visibile solo a npm ci, che gira con --ignore-scripts.
     env:
       DEPLOY_APP_DOMAIN: ${{ vars.APP_DOMAIN }}
       FORCE_WWW: ${{ vars.FORCE_WWW }}
@@ -43,6 +45,10 @@ jobs:
         with:
           node-version-file: '.nvmrc'
           cache: npm
+          # Scrive un npmrc fuori dalla cartella di lavoro (RUNNER_TEMP) che
+          # legge NODE_AUTH_TOKEN: il token si passa solo allo step npm ci.
+          registry-url: https://npm.pkg.github.com
+          scope: '@wonder-image'
 
       - name: 📦 Setup PHP
         uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
@@ -59,12 +65,22 @@ jobs:
           sudo apt-get install -y jq unzip
 
       # Le dipendenze si installano prima di caricare i secret: uno script di
-      # install compromesso non trova credenziali nell'ambiente.
+      # install compromesso non trova credenziali nell'ambiente. Fa eccezione il
+      # solo token di lettura dei pacchetti, visibile a npm ci (senza script).
       - name: 📦 Installa Pacchetti PHP
         run: composer install --no-dev --optimize-autoloader --no-scripts --no-interaction
 
+      # Il token di lettura dei pacchetti è visibile solo a questo step, che non
+      # esegue script: gli script girano nello step successivo, senza token.
       - name: 📦 Installa Pacchetti JS
-        run: npm ci
+        run: npm ci --ignore-scripts
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_GITHUB_TOKEN }}
+
+      # Nessun secret qui. Nessuna dipendenza ha script di install nel lock, quindi
+      # basta il postinstall del sito (copia la lib in assets/lib/wonder-image/dist).
+      - name: 📦 Esegui script JS (senza token)
+        run: npm run postinstall
 
       - name: 🔎 Controllo sintassi PHP
         shell: bash
