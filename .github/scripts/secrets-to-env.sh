@@ -45,7 +45,7 @@ while IFS= read -r item; do
 
   case "$key" in
     # Servono solo al runner, non in produzione
-    FTP_*|BWS_*|CLOUDFLARE_*) ;;
+    FTP_*|BWS_*|CLOUDFLARE_*|NPM_GITHUB_TOKEN) ;;
     *) printf '%s=%s\n' "$key" "$(dotenv_value "$value")" >> "$env_file" ;;
   esac
 done < <(jq -c '.[] | select(.key != null and .value != null)')
