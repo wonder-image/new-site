@@ -1,0 +1,17 @@
+Componenti di terzi usati da questo software.
+Ogni componente resta regolato dalla propria licenza.
+
+PHP
+Nessun componente di terzi dichiarato direttamente in composer.json (require: php, wonder-image/app; nessun require-dev). Le dipendenze di terzi arrivano da wonder-image/app: vedi il file THIRD-PARTY-NOTICES di quel pacchetto.
+
+JavaScript
+Nessun componente di terzi dichiarato direttamente in package.json (dependencies: solo wonder-image, dello stesso Titolare; nessuna devDependency). Il package-lock.json contiene solo quel pacchetto.
+
+Componenti inclusi nel repository
+assets/0.0/images/Default.png  -  immagine segnaposto senza intestazione né metadati di licenza nel repository; origine non dichiarata, licenza da verificare
+Nessun altro componente di terzi trovato (nessun font, icona, libreria o cartella vendor; nessuna intestazione «Copyright», «@license» o «Licensed under» di terzi nei file del repository).
+
+Solo sviluppo, non distribuiti
+Nessuno.
+
+Pacchetti dello stesso Titolare, regolati dalla loro licenza: wonder-image/app (composer), wonder-image (npm)

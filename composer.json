@@ -6,7 +6,7 @@
         "wonder-image",
         "framework"
     ],
-    "license": "MIT",
+    "license": "proprietary",
     "require": {
         "php": "^8.2",
         "wonder-image/app": "dev-main"
