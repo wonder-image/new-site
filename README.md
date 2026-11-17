@@ -55,6 +55,9 @@ Il codice attuale di `forge config`, richiamato anche da `composer update`, cons
 
 `forge config` esegue `npm install wonder-image` e poi `npm install`: può aggiornare il pacchetto `wonder-image`, `package.json` e `package-lock.json`. Non esegue un aggiornamento esplicito del programma npm; se Node/npm mancano, il setup può installare Node tramite Homebrew, includendo npm.
 
+Il pacchetto `@wonder-image/lib` è privato su GitHub Packages. Per installarlo in locale esegui `npm login --scope=@wonder-image --registry=https://npm.pkg.github.com` con il tuo username GitHub e, come password, un personal access token classic con il permesso `read:packages`.
+Il token resta nel file npm del tuo utente: non scriverlo in `.npmrc` del progetto né in `package.json`. In CI si usa il secret `NPM_GITHUB_TOKEN`.
+
 ## Progetto già creato
 
 Se ti trovi già nella cartella generata da Composer, inizia da `composer update`, poi configura Git e `origin` come sopra ed esegui `php forge provision` e i passi successivi: non ripetere `create-project`.
